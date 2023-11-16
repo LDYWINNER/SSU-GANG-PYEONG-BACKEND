@@ -5,6 +5,8 @@ import "express-async-errors";
 import helmet from "helmet";
 import mongoSanitize from "express-mongo-sanitize";
 
+import { notFoundMiddleware, errorHandlerMiddleware } from "./middleware";
+
 import authRouter from "./routers/authRouter";
 
 const app: Application = express();
@@ -26,5 +28,8 @@ app.use(mongoSanitize());
 
 //routers
 app.use("/api/v1/auth", authRouter);
+
+app.use(notFoundMiddleware);
+app.use(errorHandlerMiddleware);
 
 export default app;
