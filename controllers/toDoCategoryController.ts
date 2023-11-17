@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import ToDoCategory, { IToDoCategory } from "../models/ToDoCategory";
+import { AuthRequest } from "../middleware/authenticateUser";
+import ToDoCategory from "../models/ToDoCategory";
+import { IToDoCategory } from "../types/index";
 
-const getAllCategories = async (req: Request, res: Response) => {
+const getAllCategories = async (req: AuthRequest, res: Response) => {
   try {
     const { user } = req;
 
@@ -17,7 +19,7 @@ const getAllCategories = async (req: Request, res: Response) => {
   }
 };
 
-const createCategory = async (req: Request, res: Response) => {
+const createCategory = async (req: AuthRequest, res: Response) => {
   try {
     const { color, icon, isEditable, name }: IToDoCategory = req.body;
     const { user } = req;

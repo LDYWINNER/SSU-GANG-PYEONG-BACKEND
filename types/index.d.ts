@@ -7,19 +7,19 @@ export interface IUser {
   adminAccount: boolean;
 }
 
-export interface IColor {
+export interface IToDoColor {
   name: string;
   id: string;
   code: string;
 }
 
-export interface IIcon {
+export interface IToDoIcon {
   name: string;
   id: string;
   symbol: string;
 }
 
-export interface ICategory {
+export interface IToDoCategory {
   _id: string;
   name: string;
   user: IUser | string;
@@ -28,7 +28,7 @@ export interface ICategory {
   icon: IIcon;
 }
 
-export interface ITask {
+export interface IToDoTask {
   _id: string;
   name: string;
   categoryId: string;

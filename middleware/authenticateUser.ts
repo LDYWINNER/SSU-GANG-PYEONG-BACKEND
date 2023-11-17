@@ -3,8 +3,12 @@ import { UnAuthenticatedError } from "../errors";
 import jwt, { JwtPayload, Secret } from "jsonwebtoken";
 import User from "../models/User";
 
+export interface AuthRequest extends Request {
+  user?: string;
+}
+
 const authenticateUser = async (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction
 ) => {
@@ -14,7 +18,6 @@ const authenticateUser = async (
       throw new UnAuthenticatedError("Authentication Invalid");
     }
     const token = authorization;
-    // const { _id } = jwt.verify(token, process.env.JWT_SECRET as string);
     const { _id } = jwt.verify(
       token,
       process.env.JWT_SECRET as Secret
