@@ -6,7 +6,11 @@ interface CustomRequest extends Request {
   userId: string | JwtPayload;
 }
 
-const auth = async (req: Request, res: Response, next: NextFunction) => {
+const authenticateUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   //check header
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer")) {
@@ -27,4 +31,4 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export default auth;
+export default authenticateUser;

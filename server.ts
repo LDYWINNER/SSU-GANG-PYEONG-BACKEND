@@ -5,9 +5,14 @@ import "express-async-errors";
 import helmet from "helmet";
 import mongoSanitize from "express-mongo-sanitize";
 
-import { notFoundMiddleware, errorHandlerMiddleware } from "./middleware";
+import {
+  notFoundMiddleware,
+  errorHandlerMiddleware,
+  authenticateUser,
+} from "./middleware";
 
 import authRouter from "./routers/authRouter";
+import toDoCategoryRouter from "./routers/toDoCategoryRouter";
 
 const app: Application = express();
 const logger = morgan("dev");
@@ -28,6 +33,7 @@ app.use(mongoSanitize());
 
 //routers
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/todocategory", authenticateUser, toDoCategoryRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
