@@ -1,5 +1,4 @@
 import { Model, Schema, model } from "mongoose";
-import jwt from "jsonwebtoken";
 
 export interface IUser {
   username: string;
@@ -10,9 +9,7 @@ export interface IUser {
   adminAccount: boolean;
 }
 
-export interface IUserMethods {
-  createJWT(): void;
-}
+export interface IUserMethods {}
 
 type UserModel = Model<IUser, {}, IUserMethods>;
 
@@ -45,14 +42,5 @@ const UserSchema = new Schema<IUser, UserModel, IUserMethods>({
   // to do list?
   // 듣고 있는 수업 list
 });
-
-UserSchema.methods.createJWT = function () {
-  if (this.adminAccount) {
-    jwt.sign({ userId: this._id }, process.env.JWT_SECRET as string);
-  }
-  return jwt.sign({ userId: this._id }, process.env.JWT_SECRET as string, {
-    expiresIn: process.env.JWT_LIFETIME,
-  });
-};
 
 export default model<IUser, UserModel>("User", UserSchema);

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import User from "../models/User";
 import { StatusCodes } from "http-status-codes";
+import { createJWT } from "../utils/tokenUtils";
 
 const register = async (req: Request, res: Response) => {
   try {
@@ -22,9 +23,7 @@ const register = async (req: Request, res: Response) => {
       courseReviewNum: 0,
     });
 
-    const token = user.createJWT();
-
-    res.status(StatusCodes.CREATED).json({
+    return res.status(StatusCodes.CREATED).json({
       user: {
         username: user.username,
         email: user.email,
@@ -32,7 +31,6 @@ const register = async (req: Request, res: Response) => {
         major: user.major,
         courseReviewNum: user.courseReviewNum,
       },
-      token,
     });
   } catch (error) {
     console.log("error in register", error);
@@ -42,7 +40,7 @@ const register = async (req: Request, res: Response) => {
 
 const login = async (req: Request, res: Response) => {
   try {
-    const { email } = req.body;
+    const { email, adminAccount } = req.body;
 
     const user = await User.findOne({ email });
     if (!user) {
@@ -51,7 +49,7 @@ const login = async (req: Request, res: Response) => {
         .send({ message: "User doesn't exist" });
     }
 
-    const token = user!.createJWT();
+    const token = createJWT(user._id, user.adminAccount);
 
     res.status(StatusCodes.OK).json({
       user: {
