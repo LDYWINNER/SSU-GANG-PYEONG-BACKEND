@@ -17,10 +17,6 @@ import toDoCategoryRouter from "./routers/toDoCategoryRouter";
 const app: Application = express();
 const logger = morgan("dev");
 
-// app.get("/ping", (request: Request, response: Response) => {
-//   response.send("Pong");
-// });
-
 //middlewares
 if (process.env.NODE_ENV !== "production") {
   app.use(logger);
