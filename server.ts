@@ -13,6 +13,7 @@ import {
 
 import authRouter from "./routers/authRouter";
 import toDoCategoryRouter from "./routers/toDoCategoryRouter";
+import toDoTaskRouter from "./routers/toDoTaskRouter";
 
 const app: Application = express();
 const logger = morgan("dev");
@@ -30,6 +31,7 @@ app.use(mongoSanitize());
 //routers
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/todocategory", authenticateUser, toDoCategoryRouter);
+app.use("/api/v1/todotask", authenticateUser, toDoTaskRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
