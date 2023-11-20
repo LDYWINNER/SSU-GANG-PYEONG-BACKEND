@@ -10,7 +10,7 @@ const toDoTaskSchema = new mongoose.Schema(
     categoryId: {
       type: Schema.Types.ObjectId,
       required: true,
-      ref: "Category",
+      ref: "ToDoCategory",
     },
     name: {
       type: String,
