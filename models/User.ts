@@ -39,7 +39,6 @@ const UserSchema = new Schema<IUser, UserModel, IUserMethods>({
   adminAccount: {
     type: Boolean,
   },
-  // to do list?
   // 듣고 있는 수업 list
 });
 
