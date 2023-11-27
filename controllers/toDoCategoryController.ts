@@ -20,6 +20,21 @@ const getAllCategories = async (req: AuthRequest, res: Response) => {
   }
 };
 
+export const getCategoryById = async (req: AuthRequest, res: Response) => {
+  try {
+    const { user } = req;
+    const { id } = req.params;
+    const category = await ToDoCategory.findOne({
+      _id: id,
+    });
+    return res.send(category);
+  } catch (error) {
+    res.send({ error: "Something went wrong" });
+    console.log("error in getAllCategories", error);
+    throw error;
+  }
+};
+
 const createCategory = async (req: AuthRequest, res: Response) => {
   try {
     const { color, icon, isEditable, name }: IToDoCategory = req.body;
