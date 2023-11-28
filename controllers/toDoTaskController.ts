@@ -55,7 +55,9 @@ export const getTasksForToday = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user;
     const todaysISODate = new Date();
-    todaysISODate.setHours(0, 0, 0, 0);
+    todaysISODate.setHours(-5, 0, 0, 0);
+    console.log(todaysISODate);
+
     const tasks = await ToDoTask.find({
       user: userId,
       date: todaysISODate.toISOString(),
@@ -64,6 +66,24 @@ export const getTasksForToday = async (req: AuthRequest, res: Response) => {
   } catch (error) {
     console.log("error in getTasksForToday", error);
     res.send({ error: "Error while fetching tasks for today" });
+    throw error;
+  }
+};
+
+export const getTasksSpecificDay = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user;
+    console.log(userId);
+    const { date } = req.params;
+    console.log(date);
+    const tasks = await ToDoTask.find({
+      user: userId,
+      date: date,
+    });
+    res.send(tasks);
+  } catch (error) {
+    console.log("error in getTasksSpecificDay", error);
+    res.send({ error: "Error while fetching tasks for specific day" });
     throw error;
   }
 };
