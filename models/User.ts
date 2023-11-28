@@ -1,4 +1,5 @@
 import { Model, Schema, model } from "mongoose";
+import { ICourse } from "./Course";
 
 export interface IUser {
   username: string;
@@ -7,6 +8,9 @@ export interface IUser {
   major: string;
   courseReviewNum: number;
   adminAccount: boolean;
+  classHistory: {
+    [index: string]: [ICourse];
+  };
 }
 
 export interface IUserMethods {}
@@ -39,7 +43,9 @@ const UserSchema = new Schema<IUser, UserModel, IUserMethods>({
   adminAccount: {
     type: Boolean,
   },
-  // 듣고 있는 수업 list
+  classHistory: {
+    type: Object,
+  },
 });
 
 export default model<IUser, UserModel>("User", UserSchema);
