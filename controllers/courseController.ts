@@ -287,7 +287,7 @@ const updateUserCourseNum = async (req: AuthRequest, res: Response) => {
 
   await user?.save();
 
-  const token = createJWT(user?._id, user?.adminAccount);
+  const token = createJWT(user!._id, user!.adminAccount);
 
   res.status(StatusCodes.OK).json({ user, token });
 };
