@@ -1,6 +1,7 @@
 import { Schema, model, Model } from "mongoose";
 
 export interface ICourse {
+  _id: string;
   classNbr: string;
   subj: string;
   crs: string;
@@ -16,7 +17,7 @@ export interface ICourse {
   instructor: [string];
   instructor_names: string;
   likes: [string];
-  reviews: [Schema.Types.ObjectId];
+  reviews: Schema.Types.ObjectId[];
   semesters: [string];
 }
 

@@ -1,6 +1,29 @@
-import { Schema, Types, model } from "mongoose";
+import { Schema, Types, model, Model } from "mongoose";
 
-const CourseReviewSchema = new Schema(
+export interface ICourseReview {
+  _id: Schema.Types.ObjectId;
+  course: Schema.Types.ObjectId;
+  semester: string;
+  instructor: string;
+  myLetterGrade: string;
+  homeworkQuantity: string;
+  teamProjectPresence: boolean;
+  difficulty: string;
+  testQuantity: number;
+  quizPresence: boolean;
+  overallGrade: number;
+  overallEvaluation: string;
+  createdBy: Schema.Types.ObjectId;
+  createdByUsername: string;
+  anonymity: boolean;
+  generosity: string;
+  attendance: string;
+  likes: string[];
+}
+
+type CourseReviewModel = Model<ICourseReview>;
+
+const CourseReviewSchema = new Schema<ICourseReview, CourseReviewModel>(
   {
     course: {
       type: Schema.Types.ObjectId,
@@ -46,7 +69,7 @@ const CourseReviewSchema = new Schema(
       type: String,
     },
     createdBy: {
-      type: Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "User",
       required: [true, "Please provide user"],
     },
@@ -76,4 +99,7 @@ const CourseReviewSchema = new Schema(
   { timestamps: true }
 );
 
-export default model("CourseReview", CourseReviewSchema);
+export default model<ICourseReview, CourseReviewModel>(
+  "CourseReview",
+  CourseReviewSchema
+);

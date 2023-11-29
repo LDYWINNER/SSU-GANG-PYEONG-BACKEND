@@ -30,7 +30,7 @@ export const getCategoryById = async (req: AuthRequest, res: Response) => {
     return res.send(category);
   } catch (error) {
     res.send({ error: "Something went wrong" });
-    console.log("error in getAllCategories", error);
+    console.log("error in getCategoryById", error);
     throw error;
   }
 };
