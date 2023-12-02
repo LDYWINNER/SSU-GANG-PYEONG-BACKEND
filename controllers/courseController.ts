@@ -33,7 +33,9 @@ const getAllCourses = async (req: AuthRequest, res: Response) => {
 };
 
 const getQueryCourses = async (req: AuthRequest, res: Response) => {
-  const { search, subj } = req.query;
+  const { searchSubj: subj, keyword: search } = req.body;
+
+  console.log(subj, search);
 
   let queryObject: IQueryObject = {
     subj,
