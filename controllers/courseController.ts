@@ -33,9 +33,12 @@ const getAllCourses = async (req: AuthRequest, res: Response) => {
 };
 
 const getQueryCourses = async (req: AuthRequest, res: Response) => {
-  const { searchSubj: subj, keyword: search } = req.body;
+  const { searchSubj: subj, keyword: search } = req.query;
 
-  console.log(subj, search);
+  if (subj === "ALL" && search === undefined) {
+    const courses = await Course.find({});
+    return res.send(courses);
+  }
 
   let queryObject: IQueryObject = {
     subj,
@@ -143,11 +146,11 @@ const getQueryCourses = async (req: AuthRequest, res: Response) => {
     result = result.sort("crs");
   }
 
-  const allCourses = await result;
+  const queryCourses = await result;
   const totalCourses = await Course.countDocuments(queryObject);
 
   res.status(StatusCodes.OK).json({
-    allCourses,
+    queryCourses,
     totalCourses,
   });
 };
