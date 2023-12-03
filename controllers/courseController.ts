@@ -199,7 +199,7 @@ const getSingleCourse = async (req: AuthRequest, res: Response) => {
 
   course.reviews = await CourseReview.find({ course: courseId });
 
-  res.status(StatusCodes.OK).json({ course });
+  res.status(StatusCodes.OK).json(course);
 };
 
 const createReview = async (req: AuthRequest, res: Response) => {
