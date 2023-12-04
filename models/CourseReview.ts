@@ -9,7 +9,7 @@ export interface ICourseReview {
   homeworkQuantity: string;
   teamProjectPresence: boolean;
   difficulty: string;
-  testQuantity: number;
+  testQuantity: string;
   quizPresence: boolean;
   overallGrade: number;
   overallEvaluation: string;
@@ -54,7 +54,7 @@ const CourseReviewSchema = new Schema<ICourseReview, CourseReviewModel>(
       enum: ["difficult", "soso", "easy"],
     },
     testQuantity: {
-      type: Number,
+      type: String,
       required: [true, "Please provide test quantity"],
     },
     quizPresence: {
