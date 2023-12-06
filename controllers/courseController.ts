@@ -52,7 +52,6 @@ const getQueryCourses = async (req: AuthRequest, res: Response) => {
       ],
     });
     const totalCourses = await Course.countDocuments(queryCourses);
-    console.log(totalCourses);
 
     return res.status(StatusCodes.OK).json({
       queryCourses,
