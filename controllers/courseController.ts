@@ -43,6 +43,21 @@ const getQueryCourses = async (req: AuthRequest, res: Response) => {
       queryCourses,
       totalCourses,
     });
+  } else if (subj === "ALL" && search !== undefined) {
+    const queryCourses = await Course.find({
+      $or: [
+        { crs: { $regex: search, $options: "i" } },
+        { courseTitle: { $regex: search, $options: "i" } },
+        { instructor_names: { $regex: search, $options: "i" } },
+      ],
+    });
+    const totalCourses = await Course.countDocuments(queryCourses);
+    console.log(totalCourses);
+
+    return res.status(StatusCodes.OK).json({
+      queryCourses,
+      totalCourses,
+    });
   }
 
   let queryObject: IQueryObject = {
