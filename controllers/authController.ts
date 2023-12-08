@@ -21,6 +21,9 @@ const register = async (req: Request, res: Response) => {
       school,
       major,
       courseReviewNum: 0,
+      classHistory: {
+        "2023-fall": [],
+      },
     });
 
     return res.status(StatusCodes.CREATED).json({
@@ -30,6 +33,7 @@ const register = async (req: Request, res: Response) => {
         school: user.school,
         major: user.major,
         courseReviewNum: user.courseReviewNum,
+        classHistory: user.classHistory,
       },
     });
   } catch (error) {
@@ -59,6 +63,7 @@ const login = async (req: Request, res: Response) => {
         school: user!.school,
         major: user!.major,
         courseReviewNum: user!.courseReviewNum,
+        classHistory: user!.classHistory,
         _id: user!._id,
       },
       token,

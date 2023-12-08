@@ -38,7 +38,7 @@ const getQueryCourses = async (req: AuthRequest, res: Response) => {
   if (subj === "ALL" && search === undefined) {
     const queryCourses = await Course.find({});
     const totalCourses = await Course.countDocuments(queryCourses);
-    // return res.send(courses);
+
     return res.status(StatusCodes.OK).json({
       queryCourses,
       totalCourses,
