@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import mongoose from "mongoose";
 import { BadRequestError, NotFoundError } from "../errors";
 import { AuthRequest } from "../middleware/authenticateUser";
-import Course from "../models/Course";
+import Course, { ICourse } from "../models/Course";
 import CourseReview from "../models/CourseReview";
 import User from "../models/User";
 import { createJWT } from "../utils/tokenUtils";
@@ -316,6 +316,29 @@ const updateUserCourseNum = async (req: AuthRequest, res: Response) => {
   res.status(StatusCodes.OK).json({ user, token });
 };
 
+const getTableViewCourses = async (req: AuthRequest, res: Response) => {
+  const { tableName } = req.params;
+  console.log(req.user);
+  const user = await User.findOne({ _id: req.user });
+  const takingCourses: ICourse[] = [];
+
+  for (let i = 0; i < user!.classHistory[tableName].length; i++) {
+    const course = await Course.findOne({
+      _id: user?.classHistory[tableName][i],
+    });
+
+    if (!course) {
+      throw new NotFoundError(
+        `No course with id: ${user?.classHistory[tableName][i]}`
+      );
+    }
+
+    takingCourses.push(course);
+  }
+
+  res.status(StatusCodes.OK).json({ takingCourses });
+};
+
 export {
   getAllCourses,
   getQueryCourses,
@@ -324,4 +347,5 @@ export {
   createReview,
   likeReview,
   updateUserCourseNum,
+  getTableViewCourses,
 };
