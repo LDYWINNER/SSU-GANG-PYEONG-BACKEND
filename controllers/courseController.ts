@@ -318,7 +318,6 @@ const updateUserCourseNum = async (req: AuthRequest, res: Response) => {
 
 const getTableViewCourses = async (req: AuthRequest, res: Response) => {
   const { tableName } = req.params;
-  console.log(req.user);
   const user = await User.findOne({ _id: req.user });
   const takingCourses: ICourse[] = [];
 
@@ -339,6 +338,25 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
   res.status(StatusCodes.OK).json({ takingCourses });
 };
 
+const addTableViewCourse = async (req: AuthRequest, res: Response) => {
+  const {
+    tableName: { currentTableView },
+    courseId,
+  } = req.body;
+
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user,
+    { $addToSet: { [`classHistory.${currentTableView}`]: courseId } },
+    { new: true, runValidators: true }
+  );
+
+  console.log(updatedUser);
+
+  const token = createJWT(updatedUser!._id, updatedUser!.adminAccount);
+
+  res.status(StatusCodes.OK).json({ updatedUser, token });
+};
+
 export {
   getAllCourses,
   getQueryCourses,
@@ -348,4 +366,5 @@ export {
   likeReview,
   updateUserCourseNum,
   getTableViewCourses,
+  addTableViewCourse,
 };

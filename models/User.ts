@@ -1,5 +1,4 @@
 import { Model, Schema, model } from "mongoose";
-import { ICourse } from "./Course";
 
 export interface IUser {
   username: string;
@@ -9,7 +8,7 @@ export interface IUser {
   courseReviewNum: number;
   adminAccount: boolean;
   classHistory: {
-    [index: string]: [ICourse];
+    [index: string]: [string];
   };
 }
 
