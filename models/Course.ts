@@ -19,11 +19,15 @@ export interface ICourse {
   likes: [string];
   reviews: Schema.Types.ObjectId[];
   semesters: [string];
+  avgGrade: number;
 }
 
 type CourseModel = Model<ICourse>;
 
 const CourseSchema = new Schema<ICourse, CourseModel>({
+  avgGrade: {
+    type: Number,
+  },
   classNbr: {
     type: String,
     required: true,

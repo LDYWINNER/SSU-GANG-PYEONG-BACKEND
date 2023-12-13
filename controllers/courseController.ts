@@ -5,6 +5,7 @@ import { BadRequestError, NotFoundError } from "../errors";
 import { AuthRequest } from "../middleware/authenticateUser";
 import Course, { ICourse } from "../models/Course";
 import CourseReview from "../models/CourseReview";
+import ToDoCategory from "../models/ToDoCategory";
 import User from "../models/User";
 import { createJWT } from "../utils/tokenUtils";
 
@@ -351,6 +352,77 @@ const addTableViewCourse = async (req: AuthRequest, res: Response) => {
   );
 
   console.log(updatedUser);
+
+  const course = await Course.findOne({ _id: courseId });
+  console.log(course);
+
+  const category = await ToDoCategory.findOne({
+    name: `${course!.subj} ${course!.crs}`,
+  });
+
+  if (!category && currentTableView === "2023-fall") {
+    let subjIcon = "";
+    switch (course!.subj) {
+      case "AMS":
+        subjIcon = "📐";
+        break;
+      case "ACC":
+        subjIcon = "📈";
+        break;
+      case "BUS":
+        subjIcon = "💰";
+        break;
+      case "CSE":
+        subjIcon = "💻";
+        break;
+      case "ESE":
+        subjIcon = "💡";
+        break;
+      case "EST" || "EMP":
+        subjIcon = "👥";
+        break;
+      case "MEC":
+        subjIcon = "🔋";
+        break;
+      case "WRT" || "WAE":
+        subjIcon = "📝";
+        break;
+      default:
+        subjIcon = "🎧";
+        break;
+    }
+
+    let ratingColor = "";
+    if (course!.avgGrade === null) {
+      ratingColor = "#EDECEF";
+    } else if (course!.avgGrade <= 1) {
+      ratingColor = "#fecaca";
+    } else if (course!.avgGrade <= 2) {
+      ratingColor = "#fde68a";
+    } else if (course!.avgGrade <= 3) {
+      ratingColor = "#fed7aa";
+    } else if (course!.avgGrade <= 4) {
+      ratingColor = "#bfdbfe";
+    } else {
+      ratingColor = "#bbf7d0";
+    }
+
+    const newCategory = await ToDoCategory.create({
+      color: {
+        id: `${course!.subj} ${course!.crs}`,
+        name: `${course!.subj} ${course!.crs}`,
+        code: ratingColor,
+      },
+      icon: {
+        id: `${course!.subj} ${course!.crs}`,
+        name: `${course!.subj}`,
+        symbol: subjIcon,
+      },
+      isEditable: true,
+      name: `${course!.subj} ${course!.crs}`,
+      user: req.user,
+    });
+  }
 
   const token = createJWT(updatedUser!._id, updatedUser!.adminAccount);
 
