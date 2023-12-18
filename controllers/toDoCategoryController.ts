@@ -40,6 +40,16 @@ const createCategory = async (req: AuthRequest, res: Response) => {
     const { color, icon, isEditable, name }: IToDoCategory = req.body;
     const { user } = req;
 
+    // Check if a category with the same name already exists
+    const existingCategory = await ToDoCategory.findOne({ name, user });
+
+    if (existingCategory) {
+      // If the category exists, send an appropriate response
+      return res
+        .status(400)
+        .send({ error: "Category with this name already exists" });
+    }
+
     const category = await ToDoCategory.create({
       color,
       icon,
