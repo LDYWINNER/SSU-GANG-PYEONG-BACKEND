@@ -12,24 +12,28 @@ const getAllCategories = async (req: AuthRequest, res: Response) => {
     const categories = await ToDoCategory.find({
       user,
     });
-    return res.send(categories);
+    return res.status(StatusCodes.OK).send(categories);
   } catch (error) {
     console.log("error in getAllCategories", error);
-    res.send({ error: "Error in getting all the categories" });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .send({ error: "Error in getting all the categories" });
     throw error;
   }
 };
 
 export const getCategoryById = async (req: AuthRequest, res: Response) => {
   try {
-    const { user } = req;
+    // const { user } = req;
     const { id } = req.params;
     const category = await ToDoCategory.findOne({
       _id: id,
     });
-    return res.send(category);
+    return res.status(StatusCodes.OK).send(category);
   } catch (error) {
-    res.send({ error: "Something went wrong" });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .send({ error: "Something went wrong" });
     console.log("error in getCategoryById", error);
     throw error;
   }
@@ -40,12 +44,11 @@ const createCategory = async (req: AuthRequest, res: Response) => {
     const { color, icon, isEditable, name }: IToDoCategory = req.body;
     const { user } = req;
 
-    // Check if a category with the same name already exists
     const existingCategory = await ToDoCategory.findOne({ name, user });
 
     if (existingCategory) {
       return res
-        .status(400)
+        .status(StatusCodes.NOT_FOUND)
         .send({ error: "Category with this name already exists" });
     }
 
@@ -57,10 +60,12 @@ const createCategory = async (req: AuthRequest, res: Response) => {
       user,
     });
 
-    res.send(category);
+    res.status(StatusCodes.CREATED).send(category);
   } catch (error) {
     console.log("error in createCategory", error);
-    res.send({ error: "Error in creating a category" });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .send({ error: "Error in creating a category" });
     throw error;
   }
 };
@@ -74,10 +79,14 @@ const deleteCategory = async (req: AuthRequest, res: Response) => {
     const category = await ToDoCategory.deleteOne({
       _id: id,
     });
-    res.send({ message: "Category deleted successfully" });
+    res
+      .status(StatusCodes.OK)
+      .send({ message: "Category deleted successfully" });
   } catch (error) {
     console.log("error in deleteCategory", error);
-    res.send({ error: "Error in deleting the category" });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .send({ error: "Error in deleting the category" });
     throw error;
   }
 };
@@ -98,10 +107,14 @@ const updateCategory = async (req: AuthRequest, res: Response) => {
         },
       }
     );
-    res.send({ message: "Category updated successfully" });
+    res
+      .status(StatusCodes.OK)
+      .send({ message: "Category updated successfully" });
   } catch (error) {
     console.log("error in updateCategory", error);
-    res.send({ error: "Error in updating the category" });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .send({ error: "Error in updating the category" });
     throw error;
   }
 };
