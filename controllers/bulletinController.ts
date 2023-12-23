@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import BulletinPost from "../models/BulletinPost";
 import { StatusCodes } from "http-status-codes";
 import { BadRequestError, NotFoundError } from "../errors";
