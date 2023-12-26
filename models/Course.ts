@@ -20,6 +20,7 @@ export interface ICourse {
   reviews: Schema.Types.ObjectId[];
   semesters: [string];
   avgGrade: number;
+  unique_instructor: string;
 }
 
 type CourseModel = Model<ICourse>;
@@ -81,6 +82,10 @@ const CourseSchema = new Schema<ICourse, CourseModel>({
     required: true,
   },
   instructor_names: {
+    type: String,
+    required: true,
+  },
+  unique_instructor: {
     type: String,
     required: true,
   },
