@@ -3,6 +3,7 @@ import {
   createBulletinPost,
   deleteBulletinPost,
   getAllBulletinPosts,
+  getSingleBoardPosts,
   getSinglePost,
   likeBulletinPost,
   createComment,
@@ -17,6 +18,7 @@ bulletinRouter
   .post(createBulletinPost)
   .get(getAllBulletinPosts)
   .patch(likeBulletinPost);
+bulletinRouter.route("/board").get(getSingleBoardPosts);
 bulletinRouter
   .route("/:id")
   .delete(deleteBulletinPost)

@@ -63,22 +63,33 @@ const getAllBulletinPosts = async (req: AuthRequest, res: Response) => {
   let result = BulletinPost.find(queryObject);
   result = result.sort("-createdAt");
 
-  //setup pagination
-  const finalPage = Number(req.query.page) || 1;
-  const limit = Number(req.query.limit) || 7;
-  const skip = (finalPage - 1) * limit;
-
-  result = result.skip(skip).limit(limit);
-
   const bulletinAllPosts = await result;
 
   const bulletinTotalPosts = await BulletinPost.countDocuments(queryObject);
-  const bulletinNumOfPages = Math.ceil(bulletinTotalPosts / limit);
 
   res.status(StatusCodes.OK).json({
     bulletinAllPosts,
     bulletinTotalPosts,
-    bulletinNumOfPages,
+  });
+};
+
+const getSingleBoardPosts = async (req: AuthRequest, res: Response) => {
+  const { board } = req.query;
+
+  let queryObject: IQueryObject = {
+    board,
+  };
+
+  let result = BulletinPost.find(queryObject);
+  result = result.sort("-createdAt");
+
+  const bulletinAllPosts = await result;
+
+  const bulletinTotalPosts = await BulletinPost.countDocuments(queryObject);
+
+  res.status(StatusCodes.OK).json({
+    bulletinAllPosts,
+    bulletinTotalPosts,
   });
 };
 
@@ -231,6 +242,7 @@ export {
   createBulletinPost,
   deleteBulletinPost,
   getAllBulletinPosts,
+  getSingleBoardPosts,
   getSinglePost,
   likeBulletinPost,
   createComment,

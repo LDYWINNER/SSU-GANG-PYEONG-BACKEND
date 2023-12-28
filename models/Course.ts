@@ -15,12 +15,12 @@ export interface ICourse {
   endTime: string;
   room: string;
   instructor: [string];
-  instructor_names: string;
+  instructor_names: string; // 이 과목을 가르쳤던 교수들
   likes: [string];
   reviews: Schema.Types.ObjectId[];
   semesters: [string];
   avgGrade: number;
-  unique_instructor: string;
+  unique_instructor: string; // 표시할 때 사용할 최근 학기 교수
 }
 
 type CourseModel = Model<ICourse>;
