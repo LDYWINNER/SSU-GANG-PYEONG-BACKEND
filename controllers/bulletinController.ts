@@ -73,26 +73,6 @@ const getAllBulletinPosts = async (req: AuthRequest, res: Response) => {
   });
 };
 
-const getSingleBoardPosts = async (req: AuthRequest, res: Response) => {
-  const { board } = req.query;
-
-  let queryObject: IQueryObject = {
-    board,
-  };
-
-  let result = BulletinPost.find(queryObject);
-  result = result.sort("-createdAt");
-
-  const bulletinAllPosts = await result;
-
-  const bulletinTotalPosts = await BulletinPost.countDocuments(queryObject);
-
-  res.status(StatusCodes.OK).json({
-    bulletinAllPosts,
-    bulletinTotalPosts,
-  });
-};
-
 const getSinglePost = async (req: AuthRequest, res: Response) => {
   const { id: postId } = req.params;
 
@@ -242,7 +222,6 @@ export {
   createBulletinPost,
   deleteBulletinPost,
   getAllBulletinPosts,
-  getSingleBoardPosts,
   getSinglePost,
   likeBulletinPost,
   createComment,
