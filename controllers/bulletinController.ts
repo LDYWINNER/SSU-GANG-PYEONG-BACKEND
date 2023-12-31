@@ -42,6 +42,33 @@ interface IQueryObject {
 const getAllBulletinPosts = async (req: AuthRequest, res: Response) => {
   const { search, board } = req.query;
 
+  if (board === "ALL" && search === undefined) {
+    const bulletinAllPosts = await BulletinPost.find({});
+    const bulletinTotalPosts = await BulletinPost.countDocuments(
+      bulletinAllPosts
+    );
+
+    return res.status(StatusCodes.OK).json({
+      bulletinAllPosts,
+      bulletinTotalPosts,
+    });
+  } else if (board === "ALL" && search !== undefined) {
+    const bulletinAllPosts = await BulletinPost.find({
+      $or: [
+        { content: { $regex: search, $options: "i" } },
+        { title: { $regex: search, $options: "i" } },
+      ],
+    });
+    const bulletinTotalPosts = await BulletinPost.countDocuments(
+      bulletinAllPosts
+    );
+
+    return res.status(StatusCodes.OK).json({
+      bulletinAllPosts,
+      bulletinTotalPosts,
+    });
+  }
+
   let queryObject: IQueryObject = {
     board,
   };
