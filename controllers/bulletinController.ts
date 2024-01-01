@@ -10,7 +10,7 @@ import { AuthRequest } from "../middleware/authenticateUser";
 const createBulletinPost = async (req: AuthRequest, res: Response) => {
   const { title, content, board, anonymity } = req.body;
 
-  if (!title || !content || board === "-1") {
+  if (!title || !content || !board) {
     throw new BadRequestError("Please provide all values");
   }
 
