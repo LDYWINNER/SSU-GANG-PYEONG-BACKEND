@@ -235,69 +235,74 @@ const createReview = async (req: AuthRequest, res: Response) => {
     },
   } = req;
 
-  const course = await Course.findOne({ _id: courseId });
-  // console.log(courseId);
+  try {
+    const course = await Course.findOne({ _id: courseId });
 
-  if (!course) {
-    throw new NotFoundError(`No course with id: ${courseId}`);
-  }
+    if (!course) {
+      throw new NotFoundError(`No course with id: ${courseId}`);
+    }
 
-  if (
-    !semester ||
-    !homeworkQuantity ||
-    teamProjectPresence === null ||
-    !difficulty ||
-    !testQuantity ||
-    !testType ||
-    quizPresence === null ||
-    !overallGrade ||
-    !instructor ||
-    !generosity ||
-    !attendance
-  ) {
-    throw new BadRequestError("Please provide all values");
-  }
+    if (
+      !semester ||
+      !homeworkQuantity ||
+      teamProjectPresence === null ||
+      !difficulty ||
+      !testQuantity ||
+      !testType ||
+      quizPresence === null ||
+      !overallGrade ||
+      !instructor ||
+      !generosity ||
+      !attendance
+    ) {
+      throw new BadRequestError("Please provide all values");
+    }
 
-  const ObjectId = mongoose.Types.ObjectId;
-  const alreadyCourse = await CourseReview.findOne({
-    createdBy: new ObjectId(req.user),
-    course: new ObjectId(courseId),
-  });
+    const ObjectId = mongoose.Types.ObjectId;
+    const alreadyCourse = await CourseReview.findOne({
+      createdBy: new ObjectId(req.user),
+      course: new ObjectId(courseId),
+    });
 
-  if (alreadyCourse) {
-    throw new BadRequestError(
-      "You already submitted course review for this course :)"
-    );
-  }
+    if (alreadyCourse) {
+      throw new BadRequestError(
+        "You already submitted course review for this course :)"
+      );
+    }
 
-  //update course grade
-  course.reviews = await CourseReview.find({ course: courseId });
-  const updatedCourse = await Course.findByIdAndUpdate(
-    courseId,
-    {
-      $set: {
-        avgGrade:
-          (course.avgGrade + overallGrade) / (course.reviews.length + 1),
+    //update course grade
+    course.reviews = await CourseReview.find({ course: courseId });
+    const updatedCourse = await Course.findByIdAndUpdate(
+      courseId,
+      {
+        $set: {
+          avgGrade:
+            (course.avgGrade + overallGrade) / (course.reviews.length + 1),
+        },
       },
-    },
-    { new: true } // This option will return the updated document
-  );
-  console.log(updatedCourse);
+      { new: true } // This option will return the updated document
+    );
+    // console.log(updatedCourse);
 
-  req.body.createdBy = req.user;
-  req.body.course = courseId;
+    req.body.createdBy = req.user;
+    req.body.course = courseId;
 
-  const fetchUsername = async (userId: string) => {
-    return User.findOne({ _id: userId }).then((user) => user?.username);
-  };
-  let username = await fetchUsername(req.user as string);
-  req.body.createdByUsername = username;
+    const fetchUsername = async (userId: string) => {
+      return User.findOne({ _id: userId }).then((user) => user?.username);
+    };
+    let username = await fetchUsername(req.user as string);
+    req.body.createdByUsername = username;
 
-  const courseReview = await CourseReview.create(req.body);
-  course.reviews.push(courseReview._id);
-  course.save();
+    const courseReview = await CourseReview.create(req.body);
+    course.reviews.push(courseReview._id);
+    course.save();
 
-  res.status(StatusCodes.CREATED).json({ courseReview });
+    res.status(StatusCodes.CREATED).json({ courseReview });
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: (error as Error).message });
+  }
 };
 
 const likeReview = async (req: AuthRequest, res: Response) => {
