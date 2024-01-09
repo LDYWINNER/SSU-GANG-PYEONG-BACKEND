@@ -1,4 +1,4 @@
-import { Schema, Types, model, Model } from "mongoose";
+import { Schema, model, Model } from "mongoose";
 
 export interface ICourseReview {
   _id: Schema.Types.ObjectId;
@@ -10,6 +10,7 @@ export interface ICourseReview {
   teamProjectPresence: boolean;
   difficulty: string;
   testQuantity: string;
+  testType: string;
   quizPresence: boolean;
   overallGrade: number;
   overallEvaluation: string;
@@ -56,6 +57,10 @@ const CourseReviewSchema = new Schema<ICourseReview, CourseReviewModel>(
     testQuantity: {
       type: String,
       required: [true, "Please provide test quantity"],
+    },
+    testType: {
+      type: String,
+      required: [true, "Please provide test type"],
     },
     quizPresence: {
       type: Boolean,
