@@ -234,23 +234,24 @@ const createReview = async (req: AuthRequest, res: Response) => {
     },
   } = req;
 
-  const course = await Course.findOne({ id: courseId });
+  const course = await Course.findOne({ _id: courseId });
   // console.log(courseId);
 
   if (!course) {
     throw new NotFoundError(`No course with id: ${courseId}`);
   }
 
-  //TODO: the if condition should be modified
   if (
-    semester === "-1" ||
+    !semester ||
     !homeworkQuantity ||
     teamProjectPresence === null ||
     !difficulty ||
-    testQuantity === null ||
+    !testQuantity ||
     quizPresence === null ||
     !overallGrade ||
-    instructor === "-2"
+    !instructor ||
+    !generosity ||
+    !attendance
   ) {
     throw new BadRequestError("Please provide all values");
   }
@@ -266,6 +267,20 @@ const createReview = async (req: AuthRequest, res: Response) => {
       "You already submitted course review for this course :)"
     );
   }
+
+  //update course grade
+  course.reviews = await CourseReview.find({ course: courseId });
+  const updatedCourse = await Course.findByIdAndUpdate(
+    courseId,
+    {
+      $set: {
+        avgGrade:
+          (course.avgGrade + overallGrade) / (course.reviews.length + 1),
+      },
+    },
+    { new: true } // This option will return the updated document
+  );
+  console.log(updatedCourse);
 
   req.body.createdBy = req.user;
   req.body.course = courseId;
