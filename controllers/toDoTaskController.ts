@@ -56,7 +56,7 @@ export const getTasksForToday = async (req: AuthRequest, res: Response) => {
     const userId = req.user;
     const todaysISODate = new Date();
     todaysISODate.setHours(-5, 0, 0, 0);
-    console.log(todaysISODate);
+    // console.log(todaysISODate);
 
     const tasks = await ToDoTask.find({
       user: userId,
@@ -73,13 +73,45 @@ export const getTasksForToday = async (req: AuthRequest, res: Response) => {
 export const getTasksSpecificDay = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user;
-    console.log(userId);
+    // console.log(userId);
     const { date } = req.params;
-    console.log(date);
+    // console.log(date);
     const tasks = await ToDoTask.find({
       user: userId,
       date: date,
     });
+    res.send(tasks);
+  } catch (error) {
+    console.log("error in getTasksSpecificDay", error);
+    res.send({ error: "Error while fetching tasks for specific day" });
+    throw error;
+  }
+};
+
+export const getMonthlyTasks = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user;
+    console.log(userId);
+    const { date } = req.params;
+
+    // Parse the date to get the first and last day of the month
+    const year = parseInt(date.split("-")[0]);
+    const month = parseInt(date.split("-")[1]) - 1; // months are 0-indexed in JavaScript Date
+
+    const firstDayOfMonth = new Date(year, month, 1);
+    firstDayOfMonth.setHours(-5, 0, 0, 0);
+    const lastDayOfMonth = new Date(year, month + 1, 0); // Setting day as 0 gets the last day of the previous month
+    lastDayOfMonth.setHours(-5, 0, 0, 0);
+
+    const tasks = await ToDoTask.find({
+      user: userId,
+      date: {
+        $gte: firstDayOfMonth.toISOString(),
+        $lte: lastDayOfMonth.toISOString(),
+      },
+    });
+
+    console.log(tasks);
     res.send(tasks);
   } catch (error) {
     console.log("error in getTasksSpecificDay", error);

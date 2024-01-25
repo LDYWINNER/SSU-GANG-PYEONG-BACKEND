@@ -6,6 +6,7 @@ import {
   getAllCompletedTasks,
   getAllTasks,
   getAllTasksByCategory,
+  getMonthlyTasks,
   getTasksForToday,
   getTasksSpecificDay,
   toggleTaskStatus,
@@ -18,6 +19,7 @@ toDoTaskRouter.route("/tasks-by-categories/:id").get(getAllTasksByCategory);
 toDoTaskRouter.route("/completed").get(getAllCompletedTasks);
 toDoTaskRouter.route("/today").get(getTasksForToday);
 toDoTaskRouter.route("/:date").get(getTasksSpecificDay);
+toDoTaskRouter.route("/month/:date").get(getMonthlyTasks);
 toDoTaskRouter.route("/create").post(createTask);
 toDoTaskRouter.route("/update/:id").put(toggleTaskStatus);
 toDoTaskRouter.route("/:id").delete(deleteTask);
