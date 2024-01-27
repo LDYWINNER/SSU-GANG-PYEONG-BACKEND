@@ -2,6 +2,7 @@ import { Response } from "express";
 import { AuthRequest } from "../middleware/authenticateUser";
 import ToDoTask from "../models/ToDoTask";
 import { IToDoTask } from "../types";
+import ToDoCategory from "../models/ToDoCategory";
 
 export const getAllTasks = async (req: AuthRequest, res: Response) => {
   try {
@@ -125,10 +126,25 @@ export const createTask = async (req: AuthRequest, res: Response) => {
     const userId = req.user;
     const { name, date, categoryId }: IToDoTask = req.body;
 
+    const category = await ToDoCategory.findOne({
+      _id: categoryId,
+    });
+
     const task = await ToDoTask.create({
       name,
       date,
       categoryId,
+      categoryTitle:
+        category?.name.split(" ")[0] === "AMS" ||
+        "ACC" ||
+        "BUS" ||
+        "CSE" ||
+        "ESE" ||
+        "EST" ||
+        "EMP" ||
+        "MEC"
+          ? category?.name.split(" ")[0]
+          : "Other",
       user: userId,
     });
     res.send(task);

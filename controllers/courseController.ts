@@ -365,6 +365,7 @@ const addTableViewCourse = async (req: AuthRequest, res: Response) => {
   const {
     tableName: { currentTableView },
     courseId,
+    color,
   } = req.body;
 
   const updatedUser = await User.findByIdAndUpdate(
@@ -414,30 +415,11 @@ const addTableViewCourse = async (req: AuthRequest, res: Response) => {
         break;
     }
 
-    let ratingColor = "";
-    if (course!.avgGrade === null) {
-      ratingColor = "#EDECEF";
-    } else if (course!.avgGrade <= 1) {
-      ratingColor = "#fecaca";
-    } else if (course!.avgGrade <= 2) {
-      ratingColor = "#fde68a";
-    } else if (course!.avgGrade <= 3) {
-      ratingColor = "#fed7aa";
-    } else if (course!.avgGrade <= 4) {
-      ratingColor = "#bfdbfe";
-    } else {
-      ratingColor = "#bbf7d0";
-    }
-
     const newCategory = await ToDoCategory.create({
-      color: {
-        id: `${course!.subj} ${course!.crs}`,
-        name: `${course!.subj} ${course!.crs}`,
-        code: ratingColor,
-      },
+      color,
       icon: {
         id: `${course!.subj} ${course!.crs}`,
-        name: `${course!.subj}`,
+        name: `${course!.subj.toLowerCase()}`,
         symbol: subjIcon,
       },
       isEditable: true,
