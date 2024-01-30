@@ -10,10 +10,10 @@ export const getAllTasks = async (req: AuthRequest, res: Response) => {
     const tasks = await ToDoTask.find({
       user: userId,
     });
-    res.send(tasks);
+    res.json(tasks);
   } catch (error) {
     console.log("error in getAllTasks", error);
-    res.send({ error: "Error while fetching all tasks" });
+    res.json({ error: "Error while fetching all tasks" });
     throw error;
   }
 };
@@ -29,10 +29,10 @@ export const getAllTasksByCategory = async (
       user: userId,
       categoryId: id,
     });
-    res.send(tasks);
+    res.json(tasks);
   } catch (error) {
     console.log("error in getAllTasksByCategory", error);
-    res.send({ error: "Error while fetching all tasks by category" });
+    res.json({ error: "Error while fetching all tasks by category" });
     throw error;
   }
 };
@@ -44,10 +44,10 @@ export const getAllCompletedTasks = async (req: AuthRequest, res: Response) => {
       user: userId,
       isCompleted: true,
     });
-    res.send(tasks);
+    res.json(tasks);
   } catch (error) {
     console.log("error in getAllCompletedTasks", error);
-    res.send({ error: "Error while fetching all completed tasks" });
+    res.json({ error: "Error while fetching all completed tasks" });
     throw error;
   }
 };
@@ -63,10 +63,10 @@ export const getTasksForToday = async (req: AuthRequest, res: Response) => {
       user: userId,
       date: todaysISODate.toISOString(),
     });
-    res.send(tasks);
+    res.json(tasks);
   } catch (error) {
     console.log("error in getTasksForToday", error);
-    res.send({ error: "Error while fetching tasks for today" });
+    res.json({ error: "Error while fetching tasks for today" });
     throw error;
   }
 };
@@ -81,10 +81,10 @@ export const getTasksSpecificDay = async (req: AuthRequest, res: Response) => {
       user: userId,
       date: date,
     });
-    res.send(tasks);
+    res.json(tasks);
   } catch (error) {
     console.log("error in getTasksSpecificDay", error);
-    res.send({ error: "Error while fetching tasks for specific day" });
+    res.json({ error: "Error while fetching tasks for specific day" });
     throw error;
   }
 };
@@ -113,10 +113,10 @@ export const getMonthlyTasks = async (req: AuthRequest, res: Response) => {
     });
 
     console.log(tasks);
-    res.send(tasks);
+    res.json(tasks);
   } catch (error) {
     console.log("error in getTasksSpecificDay", error);
-    res.send({ error: "Error while fetching tasks for specific day" });
+    res.json({ error: "Error while fetching tasks for specific day" });
     throw error;
   }
 };
@@ -147,10 +147,10 @@ export const createTask = async (req: AuthRequest, res: Response) => {
           : "Other",
       user: userId,
     });
-    res.send(task);
+    res.json(task);
   } catch (error) {
     console.log("error in createTask", error);
-    res.send({ error: "Error while creating task" });
+    res.json({ error: "Error while creating task" });
     throw error;
   }
 };
@@ -168,10 +168,10 @@ export const toggleTaskStatus = async (req: AuthRequest, res: Response) => {
         isCompleted,
       }
     );
-    res.send({ message: "Task status updated" });
+    res.json({ message: "Task status updated" });
   } catch (error) {
     console.log("error in toggleTaskStatus", error);
-    res.send({ error: "Error while toggling status task" });
+    res.json({ error: "Error while toggling status task" });
     throw error;
   }
 };
@@ -182,10 +182,10 @@ export const deleteTask = async (req: AuthRequest, res: Response) => {
     await ToDoTask.deleteOne({
       _id: id,
     });
-    res.send({ message: "Task deleted" });
+    res.json({ message: "Task deleted" });
   } catch (error) {
     console.log("error in deleteTask", error);
-    res.send({ error: "Error while deleting task" });
+    res.json({ error: "Error while deleting task" });
     throw error;
   }
 };
@@ -205,10 +205,10 @@ export const editTask = async (req: AuthRequest, res: Response) => {
         },
       }
     );
-    res.send({ message: "Task updated successfully" });
+    res.json({ message: "Task updated successfully" });
   } catch (error) {
     console.log("error in editTask", error);
-    res.send({ error: " Error while updating the task" });
+    res.json({ error: " Error while updating the task" });
     throw error;
   }
 };

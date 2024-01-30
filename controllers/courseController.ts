@@ -25,10 +25,10 @@ interface IQueryObject {
 const getAllCourses = async (req: AuthRequest, res: Response) => {
   try {
     const courses = await Course.find({});
-    return res.send(courses);
+    return res.json(courses);
   } catch (error) {
     console.log("error in getAllCourses", error);
-    res.send({ error: "Error in getting all the categories" });
+    res.json({ error: "Error in getting all the categories" });
     throw error;
   }
 };
