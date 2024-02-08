@@ -20,7 +20,7 @@ export interface ICourse {
   reviews: Schema.Types.ObjectId[];
   semesters: [string];
   avgGrade: number;
-  unique_instructor: string; // 표시할 때 사용할 최근 학기 교수
+  unique_instructor: string; // 표시할 때 사용할 제일 최근 학기 교수
 }
 
 type CourseModel = Model<ICourse>;
