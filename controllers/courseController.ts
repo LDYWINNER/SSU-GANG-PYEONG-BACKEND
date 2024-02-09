@@ -462,6 +462,34 @@ const deleteTableViewCourse = async (req: AuthRequest, res: Response) => {
   }
 };
 
+const deleteAllTableViewCourse = async (req: AuthRequest, res: Response) => {
+  const {
+    tableName: { currentTableView },
+  } = req.body;
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user,
+      { $set: { [`classHistory.${currentTableView}`]: [] } },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "User not found." });
+    }
+
+    const token = createJWT(updatedUser._id, updatedUser.adminAccount);
+
+    res.status(StatusCodes.OK).json({ updatedUser, token });
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: (error as Error).message });
+  }
+};
+
 export {
   getAllCourses,
   getQueryCourses,
@@ -473,4 +501,5 @@ export {
   getTableViewCourses,
   addTableViewCourse,
   deleteTableViewCourse,
+  deleteAllTableViewCourse,
 };
