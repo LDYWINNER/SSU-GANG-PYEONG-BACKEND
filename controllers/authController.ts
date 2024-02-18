@@ -76,12 +76,11 @@ const login = async (req: Request, res: Response) => {
 };
 
 const updateUser = async (req: AuthRequest, res: Response) => {
-  const { username } = req.body;
+  const { user, username } = req.body;
   if (!username) {
     throw new BadRequestError("Please check if you provided all values");
   }
 
-  const { user } = req;
   const db_user = await User.findOne({ _id: user });
 
   db_user!.username = username;
