@@ -39,3 +39,12 @@ export interface IToDoTask {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface ITable {
+  name: string;
+}
+
+export interface IUpdateTable {
+  name: string;
+  oldName: string;
+}

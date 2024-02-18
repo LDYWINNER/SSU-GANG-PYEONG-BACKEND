@@ -12,6 +12,7 @@ const getAllCategories = async (req: AuthRequest, res: Response) => {
     const categories = await ToDoCategory.find({
       user,
     });
+
     return res.status(StatusCodes.OK).send(categories);
   } catch (error) {
     console.log("error in getAllCategories", error);

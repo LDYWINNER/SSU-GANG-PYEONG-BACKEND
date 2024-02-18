@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
+import { AuthRequest } from "../middleware/authenticateUser";
 import User from "../models/User";
 import { StatusCodes } from "http-status-codes";
 import { createJWT } from "../utils/tokenUtils";
+import { BadRequestError } from "../errors";
 
 const register = async (req: Request, res: Response) => {
   try {
@@ -22,7 +24,7 @@ const register = async (req: Request, res: Response) => {
       major,
       courseReviewNum: 0,
       classHistory: {
-        "2023-fall": [],
+        "2024-spring": [],
       },
     });
 
@@ -73,4 +75,22 @@ const login = async (req: Request, res: Response) => {
   }
 };
 
-export { register, login };
+const updateUser = async (req: AuthRequest, res: Response) => {
+  const { username } = req.body;
+  if (!username) {
+    throw new BadRequestError("Please check if you provided all values");
+  }
+
+  const { user } = req;
+  const db_user = await User.findOne({ _id: user });
+
+  db_user!.username = username;
+
+  await db_user?.save();
+
+  const token = createJWT(db_user!._id, db_user!.adminAccount);
+
+  res.status(StatusCodes.OK).json({ db_user, token });
+};
+
+export { register, login, updateUser };

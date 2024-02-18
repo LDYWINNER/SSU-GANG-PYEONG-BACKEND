@@ -1,4 +1,4 @@
-import express, { Application, Request, Response } from "express";
+import express, { Application } from "express";
 import morgan from "morgan";
 import cors from "cors";
 import "express-async-errors";
@@ -16,6 +16,7 @@ import toDoCategoryRouter from "./routers/toDoCategoryRouter";
 import toDoTaskRouter from "./routers/toDoTaskRouter";
 import courseRouter from "./routers/courseRouter";
 import bulletinRouter from "./routers/bulletinRouter";
+import tableRouter from "./routers/tableRouter";
 
 const app: Application = express();
 const logger = morgan("dev");
@@ -32,6 +33,7 @@ app.use(mongoSanitize());
 
 //routers
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/table", authenticateUser, tableRouter);
 app.use("/api/v1/todocategory", authenticateUser, toDoCategoryRouter);
 app.use("/api/v1/todotask", authenticateUser, toDoTaskRouter);
 app.use("/api/v1/course", authenticateUser, courseRouter);
