@@ -45,12 +45,9 @@ const updateTableName = async (req: AuthRequest, res: Response) => {
 
     const db_user = await User.findOne({ _id: user });
 
-    // const tempClassHistories = db_user!.classHistory[oldName];
-
     const newClassHistory: { [key: string]: any } = {};
     for (const key of Object.keys(db_user!.classHistory)) {
       if (key === oldName) {
-        // Rename the key
         newClassHistory[name] = db_user!.classHistory[oldName];
       } else {
         newClassHistory[key] = db_user!.classHistory[key];
@@ -60,14 +57,8 @@ const updateTableName = async (req: AuthRequest, res: Response) => {
     const updatedUser = await User.findByIdAndUpdate(
       user,
       { $set: { classHistory: newClassHistory } },
-      { new: true } // Return the updated document
+      { new: true }
     );
-
-    // const updatedUser = await User.findByIdAndUpdate(
-    //   user,
-    //   { $set: { [`classHistory.${name}`]: tempClassHistories } },
-    //   { new: true }
-    // );
 
     const token = createJWT(db_user!._id, db_user!.adminAccount);
 
