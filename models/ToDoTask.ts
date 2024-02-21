@@ -13,6 +13,15 @@ const toDoTaskSchema = new mongoose.Schema(
       ref: "ToDoCategory",
     },
     categoryTitle: {
+      // Subj meaning AMS, ACC, ...
+      type: String,
+      required: true,
+    },
+    categoryName: {
+      type: String,
+      required: true,
+    },
+    categoryColor: {
       type: String,
       required: true,
     },

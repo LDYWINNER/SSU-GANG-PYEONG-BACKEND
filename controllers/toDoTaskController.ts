@@ -146,6 +146,8 @@ export const createTask = async (req: AuthRequest, res: Response) => {
           ? category?.name.split(" ")[0]
           : "Other",
       user: userId,
+      categoryName: category?.name,
+      categoryColor: category?.color.code,
     });
     res.json(task);
   } catch (error) {
