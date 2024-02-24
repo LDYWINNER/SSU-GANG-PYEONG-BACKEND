@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createBulletinPost,
+  updateBulletinPost,
   deleteBulletinPost,
   getAllBulletinPosts,
   getSinglePost,
@@ -17,6 +18,7 @@ bulletinRouter
   .post(createBulletinPost)
   .get(getAllBulletinPosts)
   .patch(likeBulletinPost);
+bulletinRouter.route("/update").put(updateBulletinPost);
 bulletinRouter
   .route("/:id")
   .delete(deleteBulletinPost)

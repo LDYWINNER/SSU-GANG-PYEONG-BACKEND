@@ -28,6 +28,34 @@ const createBulletinPost = async (req: AuthRequest, res: Response) => {
   res.status(StatusCodes.CREATED).json({ post });
 };
 
+const updateBulletinPost = async (req: AuthRequest, res: Response) => {
+  try {
+    const { _id, title, content, anonymity } = req.body;
+
+    if (!title || !content) {
+      throw new BadRequestError("Please provide all values");
+    }
+
+    await BulletinPost.findByIdAndUpdate(_id, {
+      $set: {
+        title,
+        content,
+        anonymity,
+      },
+    });
+
+    res
+      .status(StatusCodes.OK)
+      .send({ message: "Bulletin Post updated successfully" });
+  } catch (error) {
+    console.log("error in updateBulletinPost", error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .send({ error: "Error in updating bulletin post" });
+    throw error;
+  }
+};
+
 interface IQueryObject {
   [x: string]: any;
   $and?: (
@@ -246,6 +274,7 @@ const deleteComment = async (req: AuthRequest, res: Response) => {
 
 export {
   createBulletinPost,
+  updateBulletinPost,
   deleteBulletinPost,
   getAllBulletinPosts,
   getSinglePost,
