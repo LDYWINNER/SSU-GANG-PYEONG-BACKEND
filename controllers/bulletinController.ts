@@ -137,8 +137,7 @@ const deleteBulletinPost = async (req: AuthRequest, res: Response) => {
 };
 
 const likeBulletinPost = async (req: AuthRequest, res: Response) => {
-  const { id: postId, like } = req.query;
-  console.log(postId, like);
+  const { id: postId, like } = req.body;
 
   const post = await BulletinPost.findOne({ _id: postId });
 
@@ -169,7 +168,7 @@ const likeBulletinPost = async (req: AuthRequest, res: Response) => {
 const createComment = async (req: AuthRequest, res: Response) => {
   const {
     params: { id: postId },
-    body: { text },
+    body: { text, anonymity },
   } = req;
 
   const bulletinPost = await BulletinPost.findById(postId);
