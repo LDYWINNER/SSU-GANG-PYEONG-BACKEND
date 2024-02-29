@@ -3,16 +3,16 @@ import { AuthRequest } from "../middleware/authenticateUser";
 import User from "../models/User";
 import { StatusCodes } from "http-status-codes";
 import { createJWT } from "../utils/tokenUtils";
-import { ITable, IUpdateTable } from "../types";
+import {} from "../types";
 
 const createNewPS = async (req: AuthRequest, res: Response) => {
   try {
-    const { schedule } = req.body;
+    console.log(req.body);
     const { user } = req;
 
     const updatedUser = await User.findByIdAndUpdate(
       req.user,
-      { $addToSet: { [`personalSchedule`]: schedule } },
+      { $addToSet: { [`personalSchedule`]: req.body } },
       { new: true, runValidators: true }
     );
 
@@ -36,7 +36,7 @@ const createNewPS = async (req: AuthRequest, res: Response) => {
 
 const updatePS = async (req: AuthRequest, res: Response) => {
   try {
-    const { name, oldName }: IUpdateTable = req.body;
+    const { name, oldName } = req.body;
     const { user } = req;
 
     const db_user = await User.findOne({ _id: user });
@@ -74,21 +74,19 @@ const updatePS = async (req: AuthRequest, res: Response) => {
 
 const deletePS = async (req: AuthRequest, res: Response) => {
   try {
-    const { schedule } = req.body;
+    const { courseId } = req.body;
     const { user } = req;
 
-    const updatedUser = await User.findByIdAndUpdate(
-      req.user,
-      { $pull: { [`personalSchedule`]: schedule } },
-      { new: true, runValidators: true }
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: user },
+      { $pull: { personalSchedule: { courseId: courseId } } },
+      { new: true }
     );
 
     const db_user = await User.findOne({ _id: user });
 
-    const token = createJWT(db_user!._id, db_user!.adminAccount);
-
     if (updatedUser) {
-      res.status(StatusCodes.OK).json({ db_user, token });
+      res.status(StatusCodes.OK).json({ db_user });
     } else {
       res.status(404).json({ message: "User not found." });
     }
