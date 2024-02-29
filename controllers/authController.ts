@@ -26,16 +26,19 @@ const register = async (req: Request, res: Response) => {
       classHistory: {
         "2024-spring": [],
       },
+      personalSchedule: [],
     });
 
     return res.status(StatusCodes.CREATED).json({
       user: {
+        _id: user._id,
         username: user.username,
         email: user.email,
         school: user.school,
         major: user.major,
         courseReviewNum: user.courseReviewNum,
         classHistory: user.classHistory,
+        personalSchedule: user.personalSchedule,
       },
     });
   } catch (error) {
@@ -59,13 +62,14 @@ const login = async (req: Request, res: Response) => {
 
     res.status(StatusCodes.OK).json({
       user: {
+        _id: user!._id,
         username: user!.username,
         email: user!.email,
         school: user!.school,
         major: user!.major,
         courseReviewNum: user!.courseReviewNum,
         classHistory: user!.classHistory,
-        _id: user!._id,
+        personalSchedule: user!.personalSchedule,
       },
       token,
     });
