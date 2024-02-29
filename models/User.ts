@@ -11,6 +11,7 @@ export interface IUser {
   classHistory: {
     [index: string]: [string];
   };
+  personalSchedule: [Object];
 }
 
 export interface IUserMethods {}
@@ -45,6 +46,9 @@ const UserSchema = new Schema<IUser, UserModel, IUserMethods>({
   },
   classHistory: {
     type: Object,
+  },
+  personalSchedule: {
+    type: [Object],
   },
 });
 

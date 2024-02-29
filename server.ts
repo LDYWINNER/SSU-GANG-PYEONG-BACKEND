@@ -17,6 +17,7 @@ import toDoTaskRouter from "./routers/toDoTaskRouter";
 import courseRouter from "./routers/courseRouter";
 import bulletinRouter from "./routers/bulletinRouter";
 import tableRouter from "./routers/tableRouter";
+import personalScheduleRouter from "./routers/personalScheduleRouter";
 
 const app: Application = express();
 const logger = morgan("dev");
@@ -33,6 +34,7 @@ app.use(mongoSanitize());
 
 //routers
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/ps", authenticateUser, personalScheduleRouter);
 app.use("/api/v1/table", authenticateUser, tableRouter);
 app.use("/api/v1/todocategory", authenticateUser, toDoCategoryRouter);
 app.use("/api/v1/todotask", authenticateUser, toDoTaskRouter);
