@@ -11,7 +11,15 @@ export interface IUser {
   classHistory: {
     [index: string]: [string];
   };
-  personalSchedule: [Object];
+  personalSchedule: [
+    {
+      id: string;
+      courseId: string;
+      sections: {
+        LEC: any;
+      };
+    }
+  ];
 }
 
 export interface IUserMethods {}

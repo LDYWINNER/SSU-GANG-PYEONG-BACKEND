@@ -3,7 +3,6 @@ import { AuthRequest } from "../middleware/authenticateUser";
 import User from "../models/User";
 import { StatusCodes } from "http-status-codes";
 import { createJWT } from "../utils/tokenUtils";
-import {} from "../types";
 
 const createNewPS = async (req: AuthRequest, res: Response) => {
   try {
@@ -36,38 +35,57 @@ const createNewPS = async (req: AuthRequest, res: Response) => {
 
 const updatePS = async (req: AuthRequest, res: Response) => {
   try {
-    const { name, oldName } = req.body;
+    const { id, courseId, sections } = req.body;
     const { user } = req;
 
-    const db_user = await User.findOne({ _id: user });
+    console.log(req.body);
 
-    const newClassHistory: { [key: string]: any } = {};
-    for (const key of Object.keys(db_user!.classHistory)) {
-      if (key === oldName) {
-        newClassHistory[name] = db_user!.classHistory[oldName];
-      } else {
-        newClassHistory[key] = db_user!.classHistory[key];
-      }
-    }
+    const updateQuery = {
+      $set: {
+        "personalSchedule.$[elem].courseId": courseId,
+        "personalSchedule.$[elem].sections": sections,
+      },
+    };
 
-    const updatedUser = await User.findByIdAndUpdate(
-      user,
-      { $set: { classHistory: newClassHistory } },
-      { new: true }
-    );
+    const arrayFilters = [{ "elem.id": id }];
 
-    const token = createJWT(db_user!._id, db_user!.adminAccount);
+    const updatedUser = await User.findByIdAndUpdate(user, updateQuery, {
+      new: true,
+      arrayFilters: arrayFilters,
+    });
 
+    // const db_user = await User.findOne({ _id: user });
+
+    // if (!db_user) {
+    //   return res.status(404).json({ message: "User not found." });
+    // }
+
+    // const itemIndex = db_user.personalSchedule.findIndex(
+    //   (item: any) => item.id === id
+    // );
+
+    // if (itemIndex !== -1) {
+    //   db_user.personalSchedule[itemIndex].courseId = courseId;
+    //   db_user.personalSchedule[itemIndex].sections = sections;
+
+    //   console.log(db_user.personalSchedule[itemIndex].sections.LEC);
+
+    //   const updatedUser = await db_user.save();
+
+    //   res.status(StatusCodes.OK).json({ db_user: updatedUser });
+    // } else {
+    //   res.status(404).json({ message: "Schedule item not found." });
+    // }
     if (updatedUser) {
-      res.status(StatusCodes.OK).json({ db_user, token });
+      res.status(StatusCodes.OK).json({ db_user: updatedUser });
     } else {
       res.status(404).json({ message: "User not found." });
     }
   } catch (error) {
-    console.log("error in updateTableName", error);
+    console.log("error in updatePS", error);
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .send({ error: "Error in update table name" });
+      .send({ error: "Error in update personal schedule" });
     throw error;
   }
 };
