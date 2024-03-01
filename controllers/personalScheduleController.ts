@@ -54,28 +54,6 @@ const updatePS = async (req: AuthRequest, res: Response) => {
       arrayFilters: arrayFilters,
     });
 
-    // const db_user = await User.findOne({ _id: user });
-
-    // if (!db_user) {
-    //   return res.status(404).json({ message: "User not found." });
-    // }
-
-    // const itemIndex = db_user.personalSchedule.findIndex(
-    //   (item: any) => item.id === id
-    // );
-
-    // if (itemIndex !== -1) {
-    //   db_user.personalSchedule[itemIndex].courseId = courseId;
-    //   db_user.personalSchedule[itemIndex].sections = sections;
-
-    //   console.log(db_user.personalSchedule[itemIndex].sections.LEC);
-
-    //   const updatedUser = await db_user.save();
-
-    //   res.status(StatusCodes.OK).json({ db_user: updatedUser });
-    // } else {
-    //   res.status(404).json({ message: "Schedule item not found." });
-    // }
     if (updatedUser) {
       res.status(StatusCodes.OK).json({ db_user: updatedUser });
     } else {

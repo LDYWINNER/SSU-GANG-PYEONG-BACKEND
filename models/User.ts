@@ -16,7 +16,7 @@ export interface IUser {
       id: string;
       courseId: string;
       sections: {
-        LEC: any;
+        "": any;
       };
     }
   ];
