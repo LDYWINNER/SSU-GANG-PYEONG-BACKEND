@@ -12,7 +12,6 @@ const appDir = path.dirname(require.main?.filename as string);
 
 let registerEmailConfirmationNum = 0;
 let loginEmailConfirmationNum = 0;
-let loginUserEmail = "";
 
 // for email
 const generateRandom = (min: number, max: number) => {
@@ -21,72 +20,64 @@ const generateRandom = (min: number, max: number) => {
 };
 
 const registerEmail = async (req: Request, res: Response) => {
-  //   const { username, email, school, major } = req.body;
-  //   if (!username || !email || school === "-1" || major === "-2") {
-  //     throw new BadRequestError("Please check if you provided all values");
-  //   }
-  //   //duplicate email checking
-  //   const userAlreadyExists = await User.findOne({ email });
-  //   if (userAlreadyExists) {
-  //     throw new BadRequestError("Email already in use");
-  //   }
-  //   userData = {
-  //     username,
-  //     email,
-  //     school,
-  //     major,
-  //   };
-  //   let authNum = generateRandom(111111, 999999);
-  //   let emailTemplete;
-  //   ejs.renderFile(
-  //     appDir + "/template/authMail.ejs",
-  //     { authCode: authNum },
-  //     function (err, data) {
-  //       if (err) {
-  //         console.log(err);
-  //       }
-  //       emailTemplete = data;
-  //     }
-  //   );
-  //   let transporter = nodemailer.createTransport({
-  //     service: "naver",
-  //     host: "smtp.naver.com",
-  //     port: 465,
-  //     auth: {
-  //       user: process.env.NODEMAILER_USER,
-  //       pass: process.env.NODEMAILER_PASS,
-  //     },
-  //     tls: {
-  //       rejectUnauthorized: false,
-  //     },
-  //   });
-  //   let mailOptions = await transporter.sendMail({
-  //     from: process.env.NODEMAILER_USER,
-  //     to: req.body.email,
-  //     subject: "SUNYTIME Register Email Verfication",
-  //     html: emailTemplete,
-  //   });
-  //   registerEmailConfirmationNum = authNum;
-  //   transporter.sendMail(mailOptions, function (error, info) {
-  //     if (error) {
-  //       console.log(error);
-  //     }
-  //     // console.log("Finish sending email : " + info.response);
-  //     res.send({ registerEmailConfirmationNum });
-  //     transporter.close();
-  //   });
+  const { username, email, school, major } = req.body;
+  if (!username || !email || school === "-1" || major === "-2") {
+    throw new BadRequestError("Please check if you provided all values");
+  }
+  //duplicate email checking
+  const userAlreadyExists = await User.findOne({ email });
+  if (userAlreadyExists) {
+    return res
+      .status(StatusCodes.CONFLICT)
+      .send({ message: "User already exist with this email" });
+  }
+
+  let authNum = generateRandom(111111, 999999);
+  let emailTemplete;
+  ejs.renderFile(
+    appDir + "/template/authMail.ejs",
+    { authCode: authNum },
+    function (err, data) {
+      if (err) {
+        console.log(err);
+      }
+      emailTemplete = data;
+    }
+  );
+
+  let transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.NODEMAILER_USER,
+      pass: process.env.NODEMAILER_PASS,
+    },
+  });
+
+  let mailOptions = await transporter.sendMail({
+    from: `"SSUGANGPYEONG" <${process.env.NODEMAILER_USER}>`,
+    to: req.body.email,
+    subject: "SSUGANGPYEONG Register Email Verfication",
+    html: emailTemplete,
+  });
+
+  registerEmailConfirmationNum = authNum;
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    }
+
+    // console.log("Finish sending email : " + info.response);
+
+    res.send({ authNum: registerEmailConfirmationNum });
+    transporter.close();
+  });
 };
 
 const register = async (req: Request, res: Response) => {
   try {
     const { username, email, school, major } = req.body;
-    //check if already exist user
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res
-        .status(StatusCodes.CONFLICT)
-        .send({ message: "User already exist with this email" });
-    }
+
     const user = await User.create({
       username,
       email,
@@ -98,6 +89,7 @@ const register = async (req: Request, res: Response) => {
       },
       personalSchedule: [],
     });
+
     return res.status(StatusCodes.CREATED).json({
       user: {
         _id: user._id,
@@ -128,7 +120,6 @@ const loginEmail = async (req: Request, res: Response) => {
     throw new UnAuthenticatedError("Login failed");
   }
   // console.log(user);
-  loginUserEmail = lowerCaseEmail;
 
   if (user.adminAccount) {
     return res.send({ authNum: -1, loginSkip: true });
