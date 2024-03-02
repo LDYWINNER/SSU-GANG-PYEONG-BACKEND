@@ -149,16 +149,10 @@ const loginEmail = async (req: Request, res: Response) => {
   );
 
   let transporter = nodemailer.createTransport({
-    service: "naver",
-    host: "smtp.naver.com",
-    port: 587,
-    secure: false,
+    service: "gmail",
     auth: {
       user: process.env.NODEMAILER_USER,
       pass: process.env.NODEMAILER_PASS,
-    },
-    tls: {
-      rejectUnauthorized: false,
     },
   });
 
@@ -175,8 +169,8 @@ const loginEmail = async (req: Request, res: Response) => {
     if (error) {
       console.log(error);
     }
-    console.log("Finish sending email : " + info.response);
-    console.log("loginEmailConfirmationNum : ", loginEmailConfirmationNum);
+    // console.log("Finish sending email : " + info.response);
+    // console.log("loginEmailConfirmationNum : ", loginEmailConfirmationNum);
 
     res.send({ authNum: loginEmailConfirmationNum });
     transporter.close();
