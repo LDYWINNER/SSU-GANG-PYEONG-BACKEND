@@ -77,6 +77,7 @@ const registerEmail = async (req: Request, res: Response) => {
 const register = async (req: Request, res: Response) => {
   try {
     const { username, email, school, major } = req.body;
+    console.log(req.body);
 
     const user = await User.create({
       username,
@@ -90,6 +91,8 @@ const register = async (req: Request, res: Response) => {
       personalSchedule: [],
     });
 
+    const token = createJWT(user._id, user.adminAccount);
+
     return res.status(StatusCodes.CREATED).json({
       user: {
         _id: user._id,
@@ -101,6 +104,7 @@ const register = async (req: Request, res: Response) => {
         classHistory: user.classHistory,
         personalSchedule: user.personalSchedule,
       },
+      token,
     });
   } catch (error) {
     console.log("error in register", error);

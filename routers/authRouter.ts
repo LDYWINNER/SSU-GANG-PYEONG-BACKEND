@@ -17,7 +17,7 @@ import {
   loginEmail,
 } from "../controllers/authController";
 
-authRouter.route("/sendEmail").post(apiLimiter, registerEmail);
+authRouter.route("/registerEmail").post(apiLimiter, registerEmail);
 authRouter.route("/loginEmail").post(apiLimiter, loginEmail);
 authRouter.route("/register").post(apiLimiter, register);
 authRouter.route("/login").post(apiLimiter, login);
