@@ -97,7 +97,7 @@ const register = async (req: Request, res: Response) => {
       user: {
         _id: user._id,
         username: user.username,
-        email: user.email,
+        email: user.email.toLowerCase(),
         school: user.school,
         major: user.major,
         courseReviewNum: user.courseReviewNum,
@@ -119,6 +119,7 @@ const loginEmail = async (req: Request, res: Response) => {
   if (!email) {
     throw new BadRequestError("Please provide valid email");
   }
+  console.log("email : ", lowerCaseEmail);
   const user = await User.findOne({ email: lowerCaseEmail });
   if (!user) {
     throw new UnAuthenticatedError("Login failed");
