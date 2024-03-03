@@ -346,13 +346,24 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
 
   for (let i = 0; i < user!.classHistory[tableName].length; i++) {
     const course = await Course.findOne({
-      _id: user?.classHistory[tableName][i],
+      _id: user?.classHistory[tableName][i].id,
     });
 
     if (!course) {
       throw new NotFoundError(
-        `No course with id: ${user?.classHistory[tableName][i]}`
+        `No course with id: ${user?.classHistory[tableName][i].id}`
       );
+    }
+
+    // mw/tuth courses
+    if (user?.classHistory[tableName][i].mwtuthDay !== undefined) {
+      const tempDays = course.day.split(", ");
+      const lastDay = tempDays.pop();
+      console.log(lastDay);
+      tempDays.push(user?.classHistory[tableName][i].mwtuthDay as string);
+      const newDays = tempDays.join(", ");
+      console.log(newDays);
+      course.day = newDays;
     }
 
     takingCourses.push(course);
@@ -366,11 +377,25 @@ const addTableViewCourse = async (req: AuthRequest, res: Response) => {
     tableName: { currentTableView },
     courseId,
     color,
+    mwtuthDay,
+  }: {
+    tableName: { currentTableView: string };
+    courseId: string;
+    color: string;
+    mwtuthDay?: string;
   } = req.body;
+
+  console.log(mwtuthDay);
 
   const updatedUser = await User.findByIdAndUpdate(
     req.user,
-    { $addToSet: { [`classHistory.${currentTableView}`]: courseId } },
+    {
+      $addToSet: {
+        [`classHistory.${currentTableView}`]: mwtuthDay
+          ? { id: courseId, mwtuthDay: mwtuthDay }
+          : { id: courseId },
+      },
+    },
     { new: true, runValidators: true }
   );
 
@@ -381,9 +406,10 @@ const addTableViewCourse = async (req: AuthRequest, res: Response) => {
 
   const category = await ToDoCategory.findOne({
     name: `${course!.subj} ${course!.crs}`,
+    user: req.user,
   });
 
-  if (!category && currentTableView === "2023-fall") {
+  if (!category) {
     let subjIcon = "";
     switch (course!.subj) {
       case "AMS":
@@ -442,7 +468,11 @@ const deleteTableViewCourse = async (req: AuthRequest, res: Response) => {
   try {
     const updatedUser = await User.findByIdAndUpdate(
       req.user,
-      { $pull: { [`classHistory.${currentTableView}`]: courseId } },
+      {
+        $pull: {
+          [`classHistory.${currentTableView}`]: { id: courseId },
+        },
+      },
       { new: true, runValidators: true }
     );
 
