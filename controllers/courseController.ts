@@ -19,6 +19,7 @@ interface IQueryObject {
         subj: any;
       }
     | { $nor: any }
+    | { semesters: { $in: any } }
   )[];
 }
 
@@ -36,8 +37,10 @@ const getAllCourses = async (req: AuthRequest, res: Response) => {
 const getQueryCourses = async (req: AuthRequest, res: Response) => {
   const { searchSubj: subj, keyword: search } = req.query;
 
+  const semesterCondition = { semesters: { $in: ["2024_spring"] } };
+
   if (subj === "ALL" && search === undefined) {
-    const queryCourses = await Course.find({});
+    const queryCourses = await Course.find(semesterCondition);
     const totalCourses = await Course.countDocuments(queryCourses);
 
     return res.status(StatusCodes.OK).json({
@@ -46,10 +49,15 @@ const getQueryCourses = async (req: AuthRequest, res: Response) => {
     });
   } else if (subj === "ALL" && search !== undefined) {
     const queryCourses = await Course.find({
-      $or: [
-        { crs: { $regex: search, $options: "i" } },
-        { courseTitle: { $regex: search, $options: "i" } },
-        { instructor_names: { $regex: search, $options: "i" } },
+      $and: [
+        {
+          $or: [
+            { crs: { $regex: search, $options: "i" } },
+            { courseTitle: { $regex: search, $options: "i" } },
+            { instructor_names: { $regex: search, $options: "i" } },
+          ],
+        },
+        semesterCondition,
       ],
     });
     const totalCourses = await Course.countDocuments(queryCourses);
@@ -61,87 +69,24 @@ const getQueryCourses = async (req: AuthRequest, res: Response) => {
   }
 
   let queryObject: IQueryObject = {
-    subj,
+    $and: [{ subj }, semesterCondition],
   };
 
   if (subj === "ACC/BUS") {
     queryObject = {
-      $or: [{ subj: "ACC" }, { subj: "BUS" }],
+      $and: [{ $or: [{ subj: "ACC" }, { subj: "BUS" }] }, semesterCondition],
     };
   }
 
   if (subj === "EST/EMP") {
     queryObject = {
-      $or: [{ subj: "EST" }, { subj: "EMP" }],
+      $and: [{ $or: [{ subj: "EST" }, { subj: "EMP" }] }, semesterCondition],
     };
   }
 
   if (subj === "SHCourse") {
     queryObject = {
-      $nor: [
-        { subj: "AMS" },
-        { subj: "ACC" },
-        { subj: "BUS" },
-        { subj: "CSE" },
-        { subj: "ESE" },
-        { subj: "EST" },
-        { subj: "EMP" },
-        { subj: "MEC" },
-      ],
-    };
-  }
-
-  if (search && subj !== "SHCourse") {
-    if (subj === "ACC/BUS") {
-      queryObject = {
-        $and: [
-          {
-            $or: [
-              { crs: { $regex: search, $options: "i" } },
-              { courseTitle: { $regex: search, $options: "i" } },
-              { instructor_names: { $regex: search, $options: "i" } },
-            ],
-          },
-          { $or: [{ subj: "ACC" }, { subj: "BUS" }] },
-        ],
-      };
-    } else if (subj === "EST/EMP") {
-      queryObject = {
-        $and: [
-          {
-            $or: [
-              { crs: { $regex: search, $options: "i" } },
-              { courseTitle: { $regex: search, $options: "i" } },
-              { instructor_names: { $regex: search, $options: "i" } },
-            ],
-          },
-          { $or: [{ subj: "EST" }, { subj: "EMP" }] },
-        ],
-      };
-    } else {
-      queryObject = {
-        $and: [
-          {
-            $or: [
-              { crs: { $regex: search, $options: "i" } },
-              { courseTitle: { $regex: search, $options: "i" } },
-              { instructor_names: { $regex: search, $options: "i" } },
-            ],
-          },
-          { subj },
-        ],
-      };
-    }
-  } else if (search && subj === "SHCourse") {
-    queryObject = {
       $and: [
-        {
-          $or: [
-            { crs: { $regex: search, $options: "i" } },
-            { courseTitle: { $regex: search, $options: "i" } },
-            { instructor_names: { $regex: search, $options: "i" } },
-          ],
-        },
         {
           $nor: [
             { subj: "AMS" },
@@ -154,8 +99,19 @@ const getQueryCourses = async (req: AuthRequest, res: Response) => {
             { subj: "MEC" },
           ],
         },
+        semesterCondition,
       ],
     };
+  }
+
+  if (search) {
+    queryObject.$and!.push({
+      $or: [
+        { crs: { $regex: search, $options: "i" } },
+        { courseTitle: { $regex: search, $options: "i" } },
+        { instructor_names: { $regex: search, $options: "i" } },
+      ],
+    });
   }
 
   let result = Course.find(queryObject);
