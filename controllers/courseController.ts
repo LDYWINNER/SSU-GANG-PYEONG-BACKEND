@@ -355,35 +355,91 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
       );
     }
 
-    // mw/tuth courses
+    // two options courses - 1. mw/tuth
     if (user?.classHistory[tableName][i].mwtuthDay !== undefined) {
-      // change the day & location value when getting the course
+      // change the day & time & instructor & location value when getting the course
       const tempDays = course.day.split(", ");
       const tempLocation = course.room.split(", ");
+      const tempStartTime = course.startTime.split(", ");
+      const tempEndTime = course.endTime.split(", ");
 
       const lastTwoDays = tempDays.pop();
       const lastTwoDaysArray = lastTwoDays!.split("/");
-      const lastTwoLocations = tempLocation.pop();
-      const lastTwoLocationsArray = lastTwoLocations!.split("/");
-      console.log(lastTwoDays);
-      console.log(lastTwoLocations);
+      const lastLocation = tempLocation.at(-1);
+      const lastStartTimes = tempStartTime.at(-1);
+      const lastEndTimes = tempEndTime.at(-1);
+      const lastInstructors = course.instructor.at(-1);
 
+      console.log(lastTwoDays);
+      console.log(lastLocation);
+      console.log(lastStartTimes);
+      console.log(lastEndTimes);
+      console.log(lastInstructors);
+
+      // days
       tempDays.push(user?.classHistory[tableName][i].mwtuthDay as string);
-      let newLocation = "";
-      if (user?.classHistory[tableName][i].mwtuthDay === lastTwoDaysArray[0]) {
-        newLocation = lastTwoLocationsArray[0];
-      } else {
-        newLocation = lastTwoLocationsArray[1];
+      // location(room) - if only includes /
+      if (lastLocation?.includes("/")) {
+        let newLocation = "";
+        const lastTwoLocations = tempLocation.pop();
+        const lastTwoLocationsArray = lastTwoLocations!.split("/");
+        if (
+          user?.classHistory[tableName][i].mwtuthDay === lastTwoDaysArray[0]
+        ) {
+          newLocation = lastTwoLocationsArray[0];
+        } else {
+          newLocation = lastTwoLocationsArray[1];
+        }
+        tempLocation.push(newLocation);
+        const newLocations = tempLocation.join(", ");
+        console.log(newLocations);
+        course.room = newLocations;
       }
-      tempLocation.push(newLocation);
+      // time - if only includes /
+      if (lastStartTimes?.includes("/")) {
+        let newStartTime = "";
+        let newEndTime = "";
+        const lastTwoStartTimes = tempStartTime.pop();
+        const lastTwoEndTimes = tempEndTime.pop();
+        const lastTwoStartTimesArray = lastTwoStartTimes!.split("/");
+        const lastTwoEndTimesArray = lastTwoEndTimes!.split("/");
+        if (
+          user?.classHistory[tableName][i].mwtuthDay === lastTwoDaysArray[0]
+        ) {
+          newStartTime = lastTwoStartTimesArray[0];
+          newEndTime = lastTwoEndTimesArray[0];
+        } else {
+          newStartTime = lastTwoStartTimesArray[1];
+          newEndTime = lastTwoEndTimesArray[1];
+        }
+        tempStartTime.push(newStartTime);
+        tempEndTime.push(newEndTime);
+        const newStartTimes = tempStartTime.join(", ");
+        const newEndTimes = tempEndTime.join(", ");
+        console.log(newStartTimes);
+        console.log(newEndTimes);
+        course.startTime = newStartTimes;
+        course.endTime = newEndTimes;
+      }
+      // instructor - if only includes /
+      if (lastInstructors?.includes("/")) {
+        let newInstructor = "";
+        const lastTwoInstructors = course.instructor.pop();
+        const lastTwoInstructorsArray = lastTwoInstructors!.split("/");
+        if (
+          user?.classHistory[tableName][i].mwtuthDay === lastTwoDaysArray[0]
+        ) {
+          newInstructor = lastTwoInstructorsArray[0];
+        } else {
+          newInstructor = lastTwoInstructorsArray[1];
+        }
+        course.instructor.push(newInstructor);
+      }
 
       const newDays = tempDays.join(", ");
-      const newLocations = tempLocation.join(", ");
-      console.log(newDays);
-      console.log(newLocations);
 
+      console.log(newDays);
       course.day = newDays;
-      course.room = newLocations;
     }
 
     takingCourses.push(course);
