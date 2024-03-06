@@ -357,13 +357,33 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
 
     // mw/tuth courses
     if (user?.classHistory[tableName][i].mwtuthDay !== undefined) {
+      // change the day & location value when getting the course
       const tempDays = course.day.split(", ");
-      const lastDay = tempDays.pop();
-      console.log(lastDay);
+      const tempLocation = course.room.split(", ");
+
+      const lastTwoDays = tempDays.pop();
+      const lastTwoDaysArray = lastTwoDays!.split("/");
+      const lastTwoLocations = tempLocation.pop();
+      const lastTwoLocationsArray = lastTwoLocations!.split("/");
+      console.log(lastTwoDays);
+      console.log(lastTwoLocations);
+
       tempDays.push(user?.classHistory[tableName][i].mwtuthDay as string);
+      let newLocation = "";
+      if (user?.classHistory[tableName][i].mwtuthDay === lastTwoDaysArray[0]) {
+        newLocation = lastTwoLocationsArray[0];
+      } else {
+        newLocation = lastTwoLocationsArray[1];
+      }
+      tempLocation.push(newLocation);
+
       const newDays = tempDays.join(", ");
+      const newLocations = tempLocation.join(", ");
       console.log(newDays);
+      console.log(newLocations);
+
       course.day = newDays;
+      course.room = newLocations;
     }
 
     takingCourses.push(course);
