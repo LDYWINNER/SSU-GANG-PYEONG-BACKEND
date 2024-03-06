@@ -37,10 +37,34 @@ const getAllCourses = async (req: AuthRequest, res: Response) => {
 const getQueryCourses = async (req: AuthRequest, res: Response) => {
   const { searchSubj: subj, keyword: search } = req.query;
 
+  // 475, 476, 487, 488, 499, 522, 523, 524, 587, 593, 596, 599, 696, 697, 698, 699, 700 처리 + only 2024_courses for tableview
   const semesterCondition = { semesters: { $in: ["2024_spring"] } };
+  const upperCourseCondition = {
+    $nor: [
+      { crs: "475" },
+      { crs: "476" },
+      { crs: "487" },
+      { crs: "488" },
+      { crs: "499" },
+      { crs: "522" },
+      { crs: "523" },
+      { crs: "524" },
+      { crs: "587" },
+      { crs: "593" },
+      { crs: "596" },
+      { crs: "599" },
+      { crs: "696" },
+      { crs: "697" },
+      { crs: "698" },
+      { crs: "699" },
+      { crs: "700" },
+    ],
+  };
 
   if (subj === "ALL" && search === undefined) {
-    const queryCourses = await Course.find(semesterCondition);
+    const queryCourses = await Course.find({
+      $and: [semesterCondition, upperCourseCondition],
+    });
     const totalCourses = await Course.countDocuments(queryCourses);
 
     return res.status(StatusCodes.OK).json({
@@ -58,6 +82,7 @@ const getQueryCourses = async (req: AuthRequest, res: Response) => {
           ],
         },
         semesterCondition,
+        upperCourseCondition,
       ],
     });
     const totalCourses = await Course.countDocuments(queryCourses);
@@ -69,18 +94,26 @@ const getQueryCourses = async (req: AuthRequest, res: Response) => {
   }
 
   let queryObject: IQueryObject = {
-    $and: [{ subj }, semesterCondition],
+    $and: [{ subj }, semesterCondition, upperCourseCondition],
   };
 
   if (subj === "ACC/BUS") {
     queryObject = {
-      $and: [{ $or: [{ subj: "ACC" }, { subj: "BUS" }] }, semesterCondition],
+      $and: [
+        { $or: [{ subj: "ACC" }, { subj: "BUS" }] },
+        semesterCondition,
+        upperCourseCondition,
+      ],
     };
   }
 
   if (subj === "EST/EMP") {
     queryObject = {
-      $and: [{ $or: [{ subj: "EST" }, { subj: "EMP" }] }, semesterCondition],
+      $and: [
+        { $or: [{ subj: "EST" }, { subj: "EMP" }] },
+        semesterCondition,
+        upperCourseCondition,
+      ],
     };
   }
 
@@ -100,6 +133,7 @@ const getQueryCourses = async (req: AuthRequest, res: Response) => {
           ],
         },
         semesterCondition,
+        upperCourseCondition,
       ],
     };
   }
