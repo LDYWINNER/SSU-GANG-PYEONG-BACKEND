@@ -346,7 +346,7 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
     }
 
     // two options courses - 1. mw/tuth
-    if (user?.classHistory[tableName][i].mwtuthDay !== undefined) {
+    if (user?.classHistory[tableName][i].twoOptionsDay !== undefined) {
       // change the day & time & instructor & location value when getting the course
       const tempDays = course.day.split(", ");
       const tempLocation = course.room.split(", ");
@@ -367,14 +367,14 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
       console.log(lastInstructors);
 
       // days
-      tempDays.push(user?.classHistory[tableName][i].mwtuthDay as string);
+      tempDays.push(user?.classHistory[tableName][i].twoOptionsDay as string);
       // location(room) - if only includes /
       if (lastLocation?.includes("/")) {
         let newLocation = "";
         const lastTwoLocations = tempLocation.pop();
         const lastTwoLocationsArray = lastTwoLocations!.split("/");
         if (
-          user?.classHistory[tableName][i].mwtuthDay === lastTwoDaysArray[0]
+          user?.classHistory[tableName][i].twoOptionsDay === lastTwoDaysArray[0]
         ) {
           newLocation = lastTwoLocationsArray[0];
         } else {
@@ -394,7 +394,7 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
         const lastTwoStartTimesArray = lastTwoStartTimes!.split("/");
         const lastTwoEndTimesArray = lastTwoEndTimes!.split("/");
         if (
-          user?.classHistory[tableName][i].mwtuthDay === lastTwoDaysArray[0]
+          user?.classHistory[tableName][i].twoOptionsDay === lastTwoDaysArray[0]
         ) {
           newStartTime = lastTwoStartTimesArray[0];
           newEndTime = lastTwoEndTimesArray[0];
@@ -417,7 +417,7 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
         const lastTwoInstructors = course.instructor.pop();
         const lastTwoInstructorsArray = lastTwoInstructors!.split("/");
         if (
-          user?.classHistory[tableName][i].mwtuthDay === lastTwoDaysArray[0]
+          user?.classHistory[tableName][i].twoOptionsDay === lastTwoDaysArray[0]
         ) {
           newInstructor = lastTwoInstructorsArray[0];
         } else {
@@ -443,22 +443,22 @@ const addTableViewCourse = async (req: AuthRequest, res: Response) => {
     tableName: { currentTableView },
     courseId,
     color,
-    mwtuthDay,
+    twoOptionsDay,
   }: {
     tableName: { currentTableView: string };
     courseId: string;
     color: string;
-    mwtuthDay?: string;
+    twoOptionsDay?: string;
   } = req.body;
 
-  console.log(mwtuthDay);
+  console.log(twoOptionsDay);
 
   const updatedUser = await User.findByIdAndUpdate(
     req.user,
     {
       $addToSet: {
-        [`classHistory.${currentTableView}`]: mwtuthDay
-          ? { id: courseId, mwtuthDay: mwtuthDay }
+        [`classHistory.${currentTableView}`]: twoOptionsDay
+          ? { id: courseId, twoOptionsDay: twoOptionsDay }
           : { id: courseId },
       },
     },

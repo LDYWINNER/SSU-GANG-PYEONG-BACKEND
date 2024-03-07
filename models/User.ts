@@ -9,7 +9,7 @@ export interface IUser {
   courseReviewNum: number;
   adminAccount: boolean;
   classHistory: {
-    [index: string]: [{ id: string; mwtuthDay?: string }];
+    [index: string]: [{ id: string; twoOptionsDay?: string }];
   };
   personalSchedule: [
     {
