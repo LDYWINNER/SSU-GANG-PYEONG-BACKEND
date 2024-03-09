@@ -345,7 +345,7 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
       );
     }
 
-    // two options courses
+    // two options day courses: if user has to choose options of day
     if (user?.classHistory[tableName][i].twoOptionsDay !== undefined) {
       // change the day & time & instructor & location value when getting the course
       const tempDays = course.day.split(", ");
@@ -355,19 +355,38 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
 
       const lastTwoDays = tempDays.pop();
       const lastTwoDaysArray = lastTwoDays!.split("/");
+      let recDays = "";
+      if (lastTwoDaysArray[1].includes("(")) {
+        recDays = lastTwoDaysArray[1].split("(")[1];
+        // something like "f)"
+      }
       const lastLocation = tempLocation.at(-1);
       const lastStartTimes = tempStartTime.at(-1);
       const lastEndTimes = tempEndTime.at(-1);
       const lastInstructors = course.instructor.at(-1);
 
-      console.log(lastTwoDays);
+      console.log(lastTwoDaysArray[1]);
+      console.log(recDays);
       console.log(lastLocation);
       console.log(lastStartTimes);
       console.log(lastEndTimes);
       console.log(lastInstructors);
 
       // days
-      tempDays.push(user?.classHistory[tableName][i].twoOptionsDay as string);
+      let finalDay = "";
+      if (recDays === "") {
+        finalDay = user?.classHistory[tableName][i].twoOptionsDay as string;
+        tempDays.push(finalDay);
+      } else {
+        finalDay =
+          user?.classHistory[tableName][i].twoOptionsDay + "(" + recDays;
+        tempDays.push(finalDay);
+      }
+      console.log("finalDay", finalDay);
+      const newDays = tempDays.join(", ");
+      console.log(newDays);
+      course.day = newDays;
+
       // location(room) - if only includes /
       if (lastLocation?.includes("/")) {
         let newLocation = "";
@@ -389,8 +408,24 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
       if (lastStartTimes?.includes("/")) {
         let newStartTime = "";
         let newEndTime = "";
-        const lastTwoStartTimes = tempStartTime.pop();
-        const lastTwoEndTimes = tempEndTime.pop();
+        let recStartTime = "";
+        let recEndTime = "";
+        let lastTwoStartTimes = tempStartTime.pop();
+        let lastTwoEndTimes = tempEndTime.pop();
+        console.log("lastTwoStartTimes", lastTwoStartTimes);
+        console.log("lastTwoEndTimes", lastTwoEndTimes);
+        if (recDays !== "") {
+          recStartTime = lastTwoStartTimes?.split("(")[1] as string;
+          recEndTime = lastTwoEndTimes?.split("(")[1] as string;
+
+          lastTwoStartTimes = lastTwoStartTimes?.split("(")[0];
+          lastTwoEndTimes = lastTwoEndTimes?.split("(")[0];
+
+          console.log("lastTwoStartTimes", lastTwoStartTimes);
+          console.log("lastTwoEndTimes", lastTwoEndTimes);
+          console.log(recStartTime);
+          console.log(recEndTime);
+        }
         const lastTwoStartTimesArray = lastTwoStartTimes!.split("/");
         const lastTwoEndTimesArray = lastTwoEndTimes!.split("/");
         if (
@@ -401,6 +436,10 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
         } else {
           newStartTime = lastTwoStartTimesArray[1];
           newEndTime = lastTwoEndTimesArray[1];
+        }
+        if (recDays !== "") {
+          newStartTime = newStartTime + "(" + recStartTime;
+          newEndTime = newEndTime + "(" + recEndTime;
         }
         tempStartTime.push(newStartTime);
         tempEndTime.push(newEndTime);
@@ -425,12 +464,9 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
         }
         course.instructor.push(newInstructor);
       }
-
-      const newDays = tempDays.join(", ");
-
-      console.log(newDays);
-      course.day = newDays;
     } else if (user?.classHistory[tableName][i].optionsTime !== undefined) {
+      // time options course: same day but user has to choose options of time
+
       // change the day & time & instructor & location value when getting the course
       const tempDays = course.day.split(", ");
       const tempLocation = course.room.split(", ");
