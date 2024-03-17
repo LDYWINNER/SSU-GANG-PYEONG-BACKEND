@@ -345,8 +345,40 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
       );
     }
 
-    // two options day courses: if user has to choose options of day
-    if (user?.classHistory[tableName][i].twoOptionsDay !== undefined) {
+    if (course.subj === "CHI" && course.crs === "111") {
+      const complicatedCourseOption = user?.classHistory[tableName][i]
+        .complicatedCourseOption as string;
+      console.log("complicatedCourseOption", complicatedCourseOption);
+
+      const tempDays = course.day.split(", ");
+      const tempLocation = course.room.split(", ");
+      const tempStartTime = course.startTime.split(", ");
+      const tempEndTime = course.endTime.split(", ");
+
+      const lastDay = tempDays.pop();
+      const lastStartTime = tempStartTime.pop();
+      const lastEndTime = tempEndTime.pop();
+
+      const selectedOptions = complicatedCourseOption.split("  ");
+      console.log(selectedOptions);
+
+      //days
+      tempDays.push(selectedOptions[0]);
+      const newDays = tempDays.join(", ");
+      course.day = newDays;
+
+      // start time
+      tempStartTime.push(selectedOptions[1]);
+      const newStartTimes = tempStartTime.join(", ");
+      course.startTime = newStartTimes;
+
+      // end time
+      tempEndTime.push(selectedOptions[3]);
+      const newEndTimes = tempEndTime.join(", ");
+      course.endTime = newEndTimes;
+    } else if (user?.classHistory[tableName][i].twoOptionsDay !== undefined) {
+      // two options day courses: if user has to choose options of day
+
       // change the day & time & instructor & location value when getting the course
       const tempDays = course.day.split(", ");
       const tempLocation = course.room.split(", ");
@@ -445,8 +477,8 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
         tempEndTime.push(newEndTime);
         const newStartTimes = tempStartTime.join(", ");
         const newEndTimes = tempEndTime.join(", ");
-        console.log(newStartTimes);
-        console.log(newEndTimes);
+        console.log("newStartTimes", newStartTimes);
+        console.log("newEndTimes", newEndTimes);
         course.startTime = newStartTimes;
         course.endTime = newEndTimes;
       }
@@ -473,17 +505,17 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
       const tempStartTime = course.startTime.split(", ");
       const tempEndTime = course.endTime.split(", ");
 
-      const lastTwoDays = tempDays.at(-1);
-      const lastTwoDaysArray = lastTwoDays!.split("/");
+      const lastDays = tempDays.at(-1);
+      const lastDaysArray = lastDays!.split("/");
       const lastLocation = tempLocation.at(-1);
       const lastInstructors = course.instructor.at(-1);
 
       const lastStartTimes = tempStartTime.pop();
       const lastEndTimes = tempEndTime.pop();
-      const lastTwoStartTimesArray = lastStartTimes!.split("/");
-      const lastTwoEndTimesArray = lastEndTimes!.split("/");
+      const lastStartTimesArray = lastStartTimes!.split("/");
+      const lastEndTimesArray = lastEndTimes!.split("/");
 
-      console.log(lastTwoDays);
+      console.log(lastDays);
       console.log(lastLocation);
       console.log(lastStartTimes);
       console.log(lastEndTimes);
@@ -492,16 +524,28 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
       // time - if only includes /
       let newStartTime = "";
       let newEndTime = "";
-      if (
-        user?.classHistory[tableName][i].optionsTime ===
-        lastTwoStartTimesArray[0]
-      ) {
-        newStartTime = lastTwoStartTimesArray[0];
-        newEndTime = lastTwoEndTimesArray[0];
+      const lastStartTimesLength = lastStartTimesArray.length;
+      // Check if the optionsTime matches any of the last start times in the array
+      const matchedIndex = lastStartTimesArray.findIndex(
+        (startTime) =>
+          startTime === user?.classHistory[tableName][i].optionsTime
+      );
+      if (matchedIndex !== -1) {
+        newStartTime = lastStartTimesArray[matchedIndex];
+        newEndTime = lastEndTimesArray[matchedIndex];
       } else {
-        newStartTime = lastTwoStartTimesArray[1];
-        newEndTime = lastTwoEndTimesArray[1];
+        newStartTime = lastStartTimesArray[lastStartTimesLength - 1];
+        newEndTime = lastEndTimesArray[lastStartTimesLength - 1];
       }
+      // if (
+      //   user?.classHistory[tableName][i].optionsTime === lastStartTimesArray[0]
+      // ) {
+      //   newStartTime = lastStartTimesArray[0];
+      //   newEndTime = lastEndTimesArray[0];
+      // } else {
+      //   newStartTime = lastStartTimesArray[1];
+      //   newEndTime = lastEndTimesArray[1];
+      // }
       tempStartTime.push(newStartTime);
       tempEndTime.push(newEndTime);
       const newStartTimes = tempStartTime.join(", ");
@@ -514,16 +558,21 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
       // location(room) - if only includes /
       if (lastLocation?.includes("/")) {
         let newLocation = "";
-        const lastTwoLocations = tempLocation.pop();
-        const lastTwoLocationsArray = lastTwoLocations!.split("/");
-        if (
-          user?.classHistory[tableName][i].optionsTime ===
-          lastTwoStartTimesArray[0]
-        ) {
-          newLocation = lastTwoLocationsArray[0];
+        const lastLocations = tempLocation.pop();
+        const lastLocationsArray = lastLocations!.split("/");
+        if (matchedIndex !== -1) {
+          newLocation = lastLocationsArray[matchedIndex];
         } else {
-          newLocation = lastTwoLocationsArray[1];
+          newLocation = lastLocationsArray[lastStartTimesLength - 1];
         }
+        // if (
+        //   user?.classHistory[tableName][i].optionsTime ===
+        //   lastStartTimesArray[0]
+        // ) {
+        //   newLocation = lastLocationsArray[0];
+        // } else {
+        //   newLocation = lastLocationsArray[1];
+        // }
         tempLocation.push(newLocation);
         const newLocations = tempLocation.join(", ");
         console.log(newLocations);
@@ -532,16 +581,21 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
       // instructor - if only includes /
       if (lastInstructors?.includes("/")) {
         let newInstructor = "";
-        const lastTwoInstructors = course.instructor.pop();
-        const lastTwoInstructorsArray = lastTwoInstructors!.split("/");
-        if (
-          user?.classHistory[tableName][i].optionsTime ===
-          lastTwoStartTimesArray[0]
-        ) {
-          newInstructor = lastTwoInstructorsArray[0];
+        const lastInstructors = course.instructor.pop();
+        const lastInstructorsArray = lastInstructors!.split("/");
+        if (matchedIndex !== -1) {
+          newInstructor = lastInstructorsArray[matchedIndex];
         } else {
-          newInstructor = lastTwoInstructorsArray[1];
+          newInstructor = lastInstructorsArray[lastStartTimesLength - 1];
         }
+        // if (
+        //   user?.classHistory[tableName][i].optionsTime ===
+        //   lastStartTimesArray[0]
+        // ) {
+        //   newInstructor = lastTwoInstructorsArray[0];
+        // } else {
+        //   newInstructor = lastTwoInstructorsArray[1];
+        // }
         course.instructor.push(newInstructor);
       }
     }
@@ -559,21 +613,23 @@ const addTableViewCourse = async (req: AuthRequest, res: Response) => {
     color,
     twoOptionsDay,
     optionsTime,
+    complicatedCourseOption,
   }: {
     tableName: { currentTableView: string };
     courseId: string;
     color: string;
+    complicatedCourseOption?: string;
     twoOptionsDay?: string;
     optionsTime?: string;
   } = req.body;
-
-  console.log(twoOptionsDay);
 
   const updatedUser = await User.findByIdAndUpdate(
     req.user,
     {
       $addToSet: {
-        [`classHistory.${currentTableView}`]: twoOptionsDay
+        [`classHistory.${currentTableView}`]: complicatedCourseOption
+          ? { id: courseId, complicatedCourseOption: complicatedCourseOption }
+          : twoOptionsDay
           ? { id: courseId, twoOptionsDay: twoOptionsDay }
           : optionsTime
           ? { id: courseId, optionsTime: optionsTime }

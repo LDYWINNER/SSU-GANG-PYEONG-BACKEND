@@ -10,7 +10,12 @@ export interface IUser {
   adminAccount: boolean;
   classHistory: {
     [index: string]: [
-      { id: string; twoOptionsDay?: string; optionsTime?: string }
+      {
+        id: string;
+        twoOptionsDay?: string;
+        optionsTime?: string;
+        complicatedCourseOption?: string;
+      }
     ];
   };
   personalSchedule: [
