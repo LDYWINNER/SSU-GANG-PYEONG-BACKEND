@@ -1,7 +1,8 @@
 import express from "express";
 import {
   getAllCourses,
-  getQueryCourses,
+  getSearchQueryCourses,
+  getTableSelectQueryCourses,
   likeCourse,
   getSingleCourse,
   createReview,
@@ -15,7 +16,8 @@ import {
 
 const courseRouter = express.Router();
 
-courseRouter.route("/").get(getQueryCourses).patch(likeCourse);
+courseRouter.route("/").get(getSearchQueryCourses).patch(likeCourse);
+courseRouter.route("/tableSelect").get(getTableSelectQueryCourses);
 courseRouter.route("/all").get(getAllCourses);
 courseRouter.route("/tableView/:tableName").get(getTableViewCourses);
 courseRouter.route("/updateUserCourseNum").patch(updateUserCourseNum);

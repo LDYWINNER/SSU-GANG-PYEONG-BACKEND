@@ -34,7 +34,94 @@ const getAllCourses = async (req: AuthRequest, res: Response) => {
   }
 };
 
-const getQueryCourses = async (req: AuthRequest, res: Response) => {
+const getSearchQueryCourses = async (req: AuthRequest, res: Response) => {
+  const { searchSubj: subj, keyword: search } = req.query;
+
+  if (subj === "ALL" && search === undefined) {
+    const queryCourses = await Course.find();
+    const totalCourses = await Course.countDocuments(queryCourses);
+
+    return res.status(StatusCodes.OK).json({
+      queryCourses,
+      totalCourses,
+    });
+  } else if (subj === "ALL" && search !== undefined) {
+    const queryCourses = await Course.find({
+      $and: [
+        {
+          $or: [
+            { crs: { $regex: search, $options: "i" } },
+            { courseTitle: { $regex: search, $options: "i" } },
+            { instructor_names: { $regex: search, $options: "i" } },
+          ],
+        },
+      ],
+    });
+    const totalCourses = await Course.countDocuments(queryCourses);
+
+    return res.status(StatusCodes.OK).json({
+      queryCourses,
+      totalCourses,
+    });
+  }
+
+  let queryObject: IQueryObject = { subj };
+
+  if (subj === "ACC/BUS") {
+    queryObject = {
+      $or: [{ subj: "ACC" }, { subj: "BUS" }],
+    };
+  }
+
+  if (subj === "EST/EMP") {
+    queryObject = {
+      $or: [{ subj: "EST" }, { subj: "EMP" }],
+    };
+  }
+
+  if (subj === "SHCourse") {
+    queryObject = {
+      $nor: [
+        { subj: "AMS" },
+        { subj: "ACC" },
+        { subj: "BUS" },
+        { subj: "CSE" },
+        { subj: "ESE" },
+        { subj: "EST" },
+        { subj: "EMP" },
+        { subj: "MEC" },
+      ],
+    };
+  }
+
+  if (search) {
+    queryObject.$and!.push({
+      $or: [
+        { crs: { $regex: search, $options: "i" } },
+        { courseTitle: { $regex: search, $options: "i" } },
+        { instructor_names: { $regex: search, $options: "i" } },
+      ],
+    });
+  }
+
+  let result = Course.find(queryObject);
+
+  if (subj === "SHCourse") {
+    result = result.sort("subj");
+  } else if (subj !== "ACC/BUS") {
+    result = result.sort("crs");
+  }
+
+  const queryCourses = await result;
+  const totalCourses = await Course.countDocuments(queryObject);
+
+  res.status(StatusCodes.OK).json({
+    queryCourses,
+    totalCourses,
+  });
+};
+
+const getTableSelectQueryCourses = async (req: AuthRequest, res: Response) => {
   const { searchSubj: subj, keyword: search } = req.query;
 
   // 475, 476, 487, 488, 499, 522, 523, 524, 587, 593, 596, 599, 696, 697, 698, 699, 700 처리 + only 2024_courses for tableview
@@ -762,7 +849,8 @@ const deleteAllTableViewCourse = async (req: AuthRequest, res: Response) => {
 
 export {
   getAllCourses,
-  getQueryCourses,
+  getSearchQueryCourses,
+  getTableSelectQueryCourses,
   likeCourse,
   getSingleCourse,
   createReview,
