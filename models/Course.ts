@@ -31,7 +31,6 @@ const CourseSchema = new Schema<ICourse, CourseModel>({
   },
   classNbr: {
     type: String,
-    required: true,
   },
   subj: {
     type: String,
