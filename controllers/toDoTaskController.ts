@@ -76,7 +76,7 @@ export const getTasksSpecificDay = async (req: AuthRequest, res: Response) => {
     const userId = req.user;
     // console.log(userId);
     const { date } = req.params;
-    // console.log(date);
+    console.log(date);
     const tasks = await ToDoTask.find({
       user: userId,
       date: date,
@@ -125,6 +125,7 @@ export const createTask = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user;
     const { name, date, categoryId }: IToDoTask = req.body;
+    console.log(date);
 
     const category = await ToDoCategory.findOne({
       _id: categoryId,
