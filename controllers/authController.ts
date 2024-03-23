@@ -217,9 +217,7 @@ const updateUser = async (req: AuthRequest, res: Response) => {
 
   await db_user?.save();
 
-  const token = createJWT(db_user!._id, db_user!.adminAccount);
-
-  res.status(StatusCodes.OK).json({ db_user, token });
+  res.status(StatusCodes.OK).json({ db_user });
 };
 
 export { registerEmail, register, loginEmail, login, updateUser };
