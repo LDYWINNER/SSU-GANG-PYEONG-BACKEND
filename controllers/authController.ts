@@ -221,4 +221,95 @@ const updateUser = async (req: AuthRequest, res: Response) => {
   res.status(StatusCodes.OK).json({ db_user });
 };
 
-export { registerEmail, register, loginEmail, login, updateUser };
+const userDeleteEmail = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+  // console.log(userId);
+
+  const user = await User.findById(userId);
+
+  if (!user) {
+    return res
+      .status(StatusCodes.CONFLICT)
+      .send({ message: "User doesn't exist" });
+  }
+
+  //send email to admin
+  let adminEmailTemplete;
+  ejs.renderFile(
+    appDir + "/template/reportUserDeleteMail.ejs",
+    {
+      id: userId,
+    },
+    function (err, data) {
+      if (err) {
+        console.log(err);
+      }
+      adminEmailTemplete = data;
+    }
+  );
+
+  let transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.NODEMAILER_USER,
+      pass: process.env.NODEMAILER_PASS,
+    },
+  });
+
+  let adminMailOptions = await transporter.sendMail({
+    from: `"SSUGANGPYEONG" <${process.env.NODEMAILER_USER}>`,
+    to: process.env.REPORT_EMAIL,
+    subject: "SSUGANGPYEONG User Delete Requested",
+    html: adminEmailTemplete,
+  });
+
+  transporter.sendMail(adminMailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    }
+    // console.log("Finish sending email : " + info.response);
+    // console.log("loginEmailConfirmationNum : ", loginEmailConfirmationNum);
+
+    // res.send({ message: "Report email sent successfully" });
+  });
+
+  // send email to user
+  let userEmailTemplete;
+  ejs.renderFile(
+    appDir + "/template/userDeleteMail.ejs",
+    {},
+    function (err, data) {
+      if (err) {
+        console.log(err);
+      }
+      userEmailTemplete = data;
+    }
+  );
+
+  let userMailOptions = await transporter.sendMail({
+    from: `"SSUGANGPYEONG" <${process.env.NODEMAILER_USER}>`,
+    to: user.email,
+    subject: "SSUGANGPYEONG User Delete Successfully Requested",
+    html: userEmailTemplete,
+  });
+
+  transporter.sendMail(userMailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    }
+    // console.log("Finish sending email : " + info.response);
+    // console.log("loginEmailConfirmationNum : ", loginEmailConfirmationNum);
+
+    res.send({ message: "Report email sent successfully" });
+    transporter.close();
+  });
+};
+
+export {
+  registerEmail,
+  register,
+  loginEmail,
+  login,
+  updateUser,
+  userDeleteEmail,
+};

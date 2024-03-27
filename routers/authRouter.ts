@@ -15,6 +15,7 @@ import {
   updateUser,
   registerEmail,
   loginEmail,
+  userDeleteEmail,
 } from "../controllers/authController";
 
 authRouter.route("/registerEmail").post(apiLimiter, registerEmail);
@@ -22,5 +23,6 @@ authRouter.route("/loginEmail").post(apiLimiter, loginEmail);
 authRouter.route("/register").post(apiLimiter, register);
 authRouter.route("/login").post(apiLimiter, login);
 authRouter.route("/updateUser").patch(apiLimiter, updateUser);
+authRouter.route("/userDelete/:userId").post(userDeleteEmail);
 
 export default authRouter;
