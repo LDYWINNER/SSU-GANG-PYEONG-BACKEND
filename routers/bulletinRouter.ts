@@ -30,7 +30,7 @@ bulletinRouter
   .route("/comment/:commentId")
   .patch(likeComment)
   .delete(deleteComment);
-bulletinRouter.route("/report-post").post(reportPostEmail);
-bulletinRouter.route("/report-comment").post(reportCommentEmail);
+bulletinRouter.route("/report-post/:id").post(reportPostEmail);
+bulletinRouter.route("/report-comment/:id").post(reportCommentEmail);
 
 export default bulletinRouter;

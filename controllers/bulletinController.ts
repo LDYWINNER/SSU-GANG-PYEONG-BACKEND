@@ -278,12 +278,13 @@ const deleteComment = async (req: AuthRequest, res: Response) => {
 const appDir = path.dirname(require.main?.filename as string);
 
 const reportPostEmail = async (req: AuthRequest, res: Response) => {
-  const { postId }: { postId: string } = req.body;
+  const { id } = req.params;
+  // console.log(id);
 
-  const bulletinPost = await BulletinPost.findById(postId);
+  const bulletinPost = await BulletinPost.findById(id);
 
   if (!bulletinPost) {
-    throw new NotFoundError(`No post with id: ${postId}`);
+    throw new NotFoundError(`No post with id: ${id}`);
   }
 
   //send email to admin
@@ -292,7 +293,7 @@ const reportPostEmail = async (req: AuthRequest, res: Response) => {
     appDir + "/template/reportPostMail.ejs",
     {
       type: "Bulletin Post",
-      id: postId,
+      id: id,
       title: bulletinPost.title,
       content: bulletinPost.content,
     },
@@ -334,12 +335,12 @@ const reportPostEmail = async (req: AuthRequest, res: Response) => {
 };
 
 const reportCommentEmail = async (req: AuthRequest, res: Response) => {
-  const { commentId }: { commentId: string } = req.body;
+  const { id } = req.params;
 
-  const bulletinComment = await BulletinPostComment.findById(commentId);
+  const bulletinComment = await BulletinPostComment.findById(id);
 
   if (!bulletinComment) {
-    throw new NotFoundError(`No post with id: ${commentId}`);
+    throw new NotFoundError(`No post with id: ${id}`);
   }
 
   //send email to admin
@@ -348,7 +349,7 @@ const reportCommentEmail = async (req: AuthRequest, res: Response) => {
     appDir + "/template/reportCommentMail.ejs",
     {
       type: "Bulletin Comment",
-      id: commentId,
+      id: id,
       text: bulletinComment.text,
       post: bulletinComment.bulletin,
     },
