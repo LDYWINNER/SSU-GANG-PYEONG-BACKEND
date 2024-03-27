@@ -8,6 +8,9 @@ import CourseReview from "../models/CourseReview";
 import ToDoCategory from "../models/ToDoCategory";
 import User from "../models/User";
 import { createJWT } from "../utils/tokenUtils";
+import ejs from "ejs";
+import nodemailer from "nodemailer";
+import path from "path";
 
 interface IQueryObject {
   [x: string]: any;
@@ -435,7 +438,7 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
     if (course.subj === "CHI" && course.crs === "111") {
       const complicatedCourseOption = user?.classHistory[tableName][i]
         .complicatedCourseOption as string;
-      console.log("complicatedCourseOption", complicatedCourseOption);
+      // console.log("complicatedCourseOption", complicatedCourseOption);
 
       const tempDays = course.day.split(", ");
       const tempLocation = course.room.split(", ");
@@ -447,7 +450,7 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
       const lastEndTime = tempEndTime.pop();
 
       const selectedOptions = complicatedCourseOption.split("  ");
-      console.log(selectedOptions);
+      // console.log(selectedOptions);
 
       //days
       tempDays.push(selectedOptions[0]);
@@ -484,12 +487,12 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
       const lastEndTimes = tempEndTime.at(-1);
       const lastInstructors = course.instructor.at(-1);
 
-      console.log(lastTwoDaysArray[1]);
-      console.log(recDays);
-      console.log(lastLocation);
-      console.log(lastStartTimes);
-      console.log(lastEndTimes);
-      console.log(lastInstructors);
+      // console.log(lastTwoDaysArray[1]);
+      // console.log(recDays);
+      // console.log(lastLocation);
+      // console.log(lastStartTimes);
+      // console.log(lastEndTimes);
+      // console.log(lastInstructors);
 
       // days
       let finalDay = "";
@@ -501,9 +504,9 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
           user?.classHistory[tableName][i].twoOptionsDay + "(" + recDays;
         tempDays.push(finalDay);
       }
-      console.log("finalDay", finalDay);
+      // console.log("finalDay", finalDay);
       const newDays = tempDays.join(", ");
-      console.log(newDays);
+      // console.log(newDays);
       course.day = newDays;
 
       // location(room) - if only includes /
@@ -520,7 +523,7 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
         }
         tempLocation.push(newLocation);
         const newLocations = tempLocation.join(", ");
-        console.log(newLocations);
+        // console.log(newLocations);
         course.room = newLocations;
       }
       // time - if only includes /
@@ -531,8 +534,8 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
         let recEndTime = "";
         let lastTwoStartTimes = tempStartTime.pop();
         let lastTwoEndTimes = tempEndTime.pop();
-        console.log("lastTwoStartTimes", lastTwoStartTimes);
-        console.log("lastTwoEndTimes", lastTwoEndTimes);
+        // console.log("lastTwoStartTimes", lastTwoStartTimes);
+        // console.log("lastTwoEndTimes", lastTwoEndTimes);
         if (recDays !== "") {
           recStartTime = lastTwoStartTimes?.split("(")[1] as string;
           recEndTime = lastTwoEndTimes?.split("(")[1] as string;
@@ -540,10 +543,10 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
           lastTwoStartTimes = lastTwoStartTimes?.split("(")[0];
           lastTwoEndTimes = lastTwoEndTimes?.split("(")[0];
 
-          console.log("lastTwoStartTimes", lastTwoStartTimes);
-          console.log("lastTwoEndTimes", lastTwoEndTimes);
-          console.log(recStartTime);
-          console.log(recEndTime);
+          // console.log("lastTwoStartTimes", lastTwoStartTimes);
+          // console.log("lastTwoEndTimes", lastTwoEndTimes);
+          // console.log(recStartTime);
+          // console.log(recEndTime);
         }
         const lastTwoStartTimesArray = lastTwoStartTimes!.split("/");
         const lastTwoEndTimesArray = lastTwoEndTimes!.split("/");
@@ -564,8 +567,8 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
         tempEndTime.push(newEndTime);
         const newStartTimes = tempStartTime.join(", ");
         const newEndTimes = tempEndTime.join(", ");
-        console.log("newStartTimes", newStartTimes);
-        console.log("newEndTimes", newEndTimes);
+        // console.log("newStartTimes", newStartTimes);
+        // console.log("newEndTimes", newEndTimes);
         course.startTime = newStartTimes;
         course.endTime = newEndTimes;
       }
@@ -602,11 +605,11 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
       const lastStartTimesArray = lastStartTimes!.split("/");
       const lastEndTimesArray = lastEndTimes!.split("/");
 
-      console.log(lastDays);
-      console.log(lastLocation);
-      console.log(lastStartTimes);
-      console.log(lastEndTimes);
-      console.log(lastInstructors);
+      // console.log(lastDays);
+      // console.log(lastLocation);
+      // console.log(lastStartTimes);
+      // console.log(lastEndTimes);
+      // console.log(lastInstructors);
 
       // time - if only includes /
       let newStartTime = "";
@@ -637,8 +640,8 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
       tempEndTime.push(newEndTime);
       const newStartTimes = tempStartTime.join(", ");
       const newEndTimes = tempEndTime.join(", ");
-      console.log(newStartTimes);
-      console.log(newEndTimes);
+      // console.log(newStartTimes);
+      // console.log(newEndTimes);
       course.startTime = newStartTimes;
       course.endTime = newEndTimes;
 
@@ -662,7 +665,7 @@ const getTableViewCourses = async (req: AuthRequest, res: Response) => {
         // }
         tempLocation.push(newLocation);
         const newLocations = tempLocation.join(", ");
-        console.log(newLocations);
+        // console.log(newLocations);
         course.room = newLocations;
       }
       // instructor - if only includes /
@@ -726,10 +729,10 @@ const addTableViewCourse = async (req: AuthRequest, res: Response) => {
     { new: true, runValidators: true }
   );
 
-  console.log(updatedUser);
+  // console.log(updatedUser);
 
   const course = await Course.findOne({ _id: courseId });
-  console.log(course);
+  // console.log(course);
 
   const category = await ToDoCategory.findOne({
     name: `${course!.subj} ${course!.crs}`,
@@ -847,6 +850,62 @@ const deleteAllTableViewCourse = async (req: AuthRequest, res: Response) => {
   }
 };
 
+const appDir = path.dirname(require.main?.filename as string);
+
+const reportEmail = async (req: AuthRequest, res: Response) => {
+  const { reviewId } = req.params;
+
+  const review = await CourseReview.findOne({ _id: reviewId });
+
+  if (!review) {
+    throw new NotFoundError(`No review with id: ${reviewId}`);
+  }
+
+  //send email to admin
+  let emailTemplete;
+  ejs.renderFile(
+    appDir + "/template/reportCourseReviewMail.ejs",
+    {
+      type: "Course Review",
+      id: reviewId,
+    },
+    function (err, data) {
+      if (err) {
+        console.log(err);
+      }
+      emailTemplete = data;
+    }
+  );
+
+  let transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.NODEMAILER_USER,
+      pass: process.env.NODEMAILER_PASS,
+    },
+  });
+
+  let mailOptions = await transporter.sendMail({
+    from: `"SSUGANGPYEONG" <${process.env.NODEMAILER_USER}>`,
+    to: process.env.NODEMAILER_USER,
+    subject: "SSUGANGPYEONG Report",
+    html: emailTemplete,
+  });
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    }
+    // console.log("Finish sending email : " + info.response);
+    // console.log("loginEmailConfirmationNum : ", loginEmailConfirmationNum);
+
+    res.send({ message: "Report email sent successfully" });
+    transporter.close();
+  });
+
+  // send email to review creator
+};
+
 export {
   getAllCourses,
   getSearchQueryCourses,
@@ -860,4 +919,5 @@ export {
   addTableViewCourse,
   deleteTableViewCourse,
   deleteAllTableViewCourse,
+  reportEmail,
 };

@@ -12,6 +12,7 @@ import {
   addTableViewCourse,
   deleteTableViewCourse,
   deleteAllTableViewCourse,
+  reportEmail,
 } from "../controllers/courseController";
 
 const courseRouter = express.Router();
@@ -26,5 +27,6 @@ courseRouter.route("/review/:reviewId").patch(likeReview);
 courseRouter.route("/patchTVCourse").patch(addTableViewCourse);
 courseRouter.route("/deleteTVCourse").patch(deleteTableViewCourse);
 courseRouter.route("/deleteAllTVCourse").patch(deleteAllTableViewCourse);
+courseRouter.route("/report").post(reportEmail);
 
 export default courseRouter;

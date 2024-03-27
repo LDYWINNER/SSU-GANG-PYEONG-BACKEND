@@ -6,6 +6,9 @@ import User from "../models/User";
 import checkPermissions from "../utils/checkPermissions";
 import BulletinPostComment from "../models/BulletinPostComment";
 import { AuthRequest } from "../middleware/authenticateUser";
+import ejs from "ejs";
+import nodemailer from "nodemailer";
+import path from "path";
 
 const createBulletinPost = async (req: AuthRequest, res: Response) => {
   const { title, content, board, anonymity } = req.body;
@@ -272,6 +275,119 @@ const deleteComment = async (req: AuthRequest, res: Response) => {
   res.status(StatusCodes.OK).json({ msg: "Comment removed successfully" });
 };
 
+const appDir = path.dirname(require.main?.filename as string);
+
+const reportPostEmail = async (req: AuthRequest, res: Response) => {
+  const { postId }: { postId: string } = req.body;
+
+  const bulletinPost = await BulletinPost.findById(postId);
+
+  if (!bulletinPost) {
+    throw new NotFoundError(`No post with id: ${postId}`);
+  }
+
+  //send email to admin
+  let emailTemplete;
+  ejs.renderFile(
+    appDir + "/template/reportPostMail.ejs",
+    {
+      type: "Bulletin Post",
+      id: postId,
+      title: bulletinPost.title,
+      content: bulletinPost.content,
+    },
+    function (err, data) {
+      if (err) {
+        console.log(err);
+      }
+      emailTemplete = data;
+    }
+  );
+
+  let transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.NODEMAILER_USER,
+      pass: process.env.NODEMAILER_PASS,
+    },
+  });
+
+  let mailOptions = await transporter.sendMail({
+    from: `"SSUGANGPYEONG" <${process.env.NODEMAILER_USER}>`,
+    to: process.env.NODEMAILER_USER,
+    subject: "SSUGANGPYEONG Report",
+    html: emailTemplete,
+  });
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    }
+    // console.log("Finish sending email : " + info.response);
+    // console.log("loginEmailConfirmationNum : ", loginEmailConfirmationNum);
+
+    res.send({ message: "Report email sent successfully" });
+    transporter.close();
+  });
+
+  // send email to post creator
+};
+
+const reportCommentEmail = async (req: AuthRequest, res: Response) => {
+  const { commentId }: { commentId: string } = req.body;
+
+  const bulletinComment = await BulletinPostComment.findById(commentId);
+
+  if (!bulletinComment) {
+    throw new NotFoundError(`No post with id: ${commentId}`);
+  }
+
+  //send email to admin
+  let emailTemplete;
+  ejs.renderFile(
+    appDir + "/template/reportCommentMail.ejs",
+    {
+      type: "Bulletin Comment",
+      id: commentId,
+      text: bulletinComment.text,
+    },
+    function (err, data) {
+      if (err) {
+        console.log(err);
+      }
+      emailTemplete = data;
+    }
+  );
+
+  let transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.NODEMAILER_USER,
+      pass: process.env.NODEMAILER_PASS,
+    },
+  });
+
+  let mailOptions = await transporter.sendMail({
+    from: `"SSUGANGPYEONG" <${process.env.NODEMAILER_USER}>`,
+    to: process.env.NODEMAILER_USER,
+    subject: "SSUGANGPYEONG Report",
+    html: emailTemplete,
+  });
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    }
+    // console.log("Finish sending email : " + info.response);
+    // console.log("loginEmailConfirmationNum : ", loginEmailConfirmationNum);
+
+    res.send({ message: "Report email sent successfully" });
+    transporter.close();
+  });
+
+  // send email to post creator
+};
+
 export {
   createBulletinPost,
   updateBulletinPost,
@@ -282,4 +398,6 @@ export {
   createComment,
   likeComment,
   deleteComment,
+  reportPostEmail,
+  reportCommentEmail,
 };

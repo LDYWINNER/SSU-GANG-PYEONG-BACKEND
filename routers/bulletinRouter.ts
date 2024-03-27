@@ -9,6 +9,8 @@ import {
   createComment,
   likeComment,
   deleteComment,
+  reportPostEmail,
+  reportCommentEmail,
 } from "../controllers/bulletinController";
 
 const bulletinRouter = express.Router();
@@ -28,5 +30,7 @@ bulletinRouter
   .route("/comment/:commentId")
   .patch(likeComment)
   .delete(deleteComment);
+bulletinRouter.route("/report-post").post(reportPostEmail);
+bulletinRouter.route("/report-comment").post(reportCommentEmail);
 
 export default bulletinRouter;
