@@ -889,7 +889,7 @@ const reportEmail = async (req: AuthRequest, res: Response) => {
 
   let mailOptions = await transporter.sendMail({
     from: `"SSUGANGPYEONG" <${process.env.NODEMAILER_USER}>`,
-    to: process.env.NODEMAILER_USER,
+    to: process.env.REPORT_EMAIL,
     subject: "SSUGANGPYEONG Report",
     html: emailTemplete,
   });
