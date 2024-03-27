@@ -853,12 +853,14 @@ const deleteAllTableViewCourse = async (req: AuthRequest, res: Response) => {
 const appDir = path.dirname(require.main?.filename as string);
 
 const reportEmail = async (req: AuthRequest, res: Response) => {
-  const { reviewId } = req.params;
+  const { id } = req.params;
 
-  const review = await CourseReview.findOne({ _id: reviewId });
+  const review = await CourseReview.findOne({ _id: id });
+
+  // console.log(review);
 
   if (!review) {
-    throw new NotFoundError(`No review with id: ${reviewId}`);
+    throw new NotFoundError(`No review with id: ${id}`);
   }
 
   //send email to admin
@@ -867,7 +869,7 @@ const reportEmail = async (req: AuthRequest, res: Response) => {
     appDir + "/template/reportCourseReviewMail.ejs",
     {
       type: "Course Review",
-      id: reviewId,
+      id: id,
     },
     function (err, data) {
       if (err) {

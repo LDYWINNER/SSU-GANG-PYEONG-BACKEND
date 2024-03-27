@@ -27,6 +27,6 @@ courseRouter.route("/review/:reviewId").patch(likeReview);
 courseRouter.route("/patchTVCourse").patch(addTableViewCourse);
 courseRouter.route("/deleteTVCourse").patch(deleteTableViewCourse);
 courseRouter.route("/deleteAllTVCourse").patch(deleteAllTableViewCourse);
-courseRouter.route("/report").post(reportEmail);
+courseRouter.route("/report/:id").post(reportEmail);
 
 export default courseRouter;
