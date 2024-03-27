@@ -8,6 +8,7 @@ export interface IUser {
   major: string;
   courseReviewNum: number;
   adminAccount: boolean;
+  blocked: boolean;
   classHistory: {
     [index: string]: [
       {
@@ -64,6 +65,9 @@ const UserSchema = new Schema<IUser, UserModel, IUserMethods>({
   },
   personalSchedule: {
     type: [Object],
+  },
+  blocked: {
+    type: Boolean,
   },
 });
 

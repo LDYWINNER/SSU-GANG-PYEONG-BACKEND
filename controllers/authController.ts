@@ -196,6 +196,7 @@ const login = async (req: Request, res: Response) => {
         courseReviewNum: user!.courseReviewNum,
         classHistory: user!.classHistory,
         personalSchedule: user!.personalSchedule,
+        blocked: user!.blocked,
       },
       token,
     });
