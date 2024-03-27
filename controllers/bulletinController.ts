@@ -350,6 +350,7 @@ const reportCommentEmail = async (req: AuthRequest, res: Response) => {
       type: "Bulletin Comment",
       id: commentId,
       text: bulletinComment.text,
+      post: bulletinComment.bulletin,
     },
     function (err, data) {
       if (err) {
