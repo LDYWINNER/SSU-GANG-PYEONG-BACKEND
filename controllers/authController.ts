@@ -114,15 +114,19 @@ const register = async (req: Request, res: Response) => {
 
 const loginEmail = async (req: Request, res: Response) => {
   const { email }: { email: string } = req.body;
+
   const lowerCaseEmail = email.toLowerCase();
 
   if (!email) {
     throw new BadRequestError("Please provide valid email");
   }
-  console.log("email : ", lowerCaseEmail);
+  // console.log("email : ", lowerCaseEmail);
+
   const user = await User.findOne({ email: lowerCaseEmail });
   if (!user) {
-    throw new UnAuthenticatedError("Login failed");
+    return res
+      .status(StatusCodes.CONFLICT)
+      .send({ message: "User doesn't exist" });
   }
   // console.log(user);
 
@@ -221,6 +225,30 @@ const updateUser = async (req: AuthRequest, res: Response) => {
   res.status(StatusCodes.OK).json({ db_user });
 };
 
+const addHateUser = async (req: AuthRequest, res: Response) => {
+  const { hateId } = req.params;
+
+  // const updatedUser = await User.findByIdAndUpdate(
+  //   req.user,
+  //   {
+  //     $addToSet: {
+  //       [`classHistory.${currentTableView}`]: complicatedCourseOption
+  //         ? { id: courseId, complicatedCourseOption: complicatedCourseOption }
+  //         : twoOptionsDay
+  //         ? { id: courseId, twoOptionsDay: twoOptionsDay }
+  //         : optionsTime
+  //         ? { id: courseId, optionsTime: optionsTime }
+  //         : { id: courseId },
+  //     },
+  //   },
+  //   { new: true, runValidators: true }
+  // );
+
+  // console.log(updatedUser);
+
+  // res.status(StatusCodes.OK).json({ updatedUser });
+};
+
 const userDeleteEmail = async (req: Request, res: Response) => {
   const { userId } = req.params;
   // console.log(userId);
@@ -311,5 +339,6 @@ export {
   loginEmail,
   login,
   updateUser,
+  addHateUser,
   userDeleteEmail,
 };
