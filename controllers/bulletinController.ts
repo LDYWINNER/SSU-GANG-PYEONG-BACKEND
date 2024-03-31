@@ -293,6 +293,12 @@ const deleteComment = async (req: AuthRequest, res: Response) => {
   // await comment.remove();
   await BulletinPostComment.findByIdAndDelete(commentId);
 
+  await BulletinPost.findByIdAndUpdate(
+    comment.bulletin,
+    { $pull: { comments: commentId } },
+    { new: true }
+  );
+
   res.status(StatusCodes.OK).json({ msg: "Comment removed successfully" });
 };
 
