@@ -9,6 +9,7 @@ import {
   createComment,
   likeComment,
   deleteComment,
+  addHateUser,
   reportPostEmail,
   reportCommentEmail,
 } from "../controllers/bulletinController";
@@ -30,6 +31,7 @@ bulletinRouter
   .route("/comment/:commentId")
   .patch(likeComment)
   .delete(deleteComment);
+bulletinRouter.route("/hateUser/:hateId").patch(addHateUser);
 bulletinRouter.route("/report-post/:id").post(reportPostEmail);
 bulletinRouter.route("/report-comment/:id").post(reportCommentEmail);
 

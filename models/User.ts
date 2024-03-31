@@ -9,6 +9,7 @@ export interface IUser {
   courseReviewNum: number;
   adminAccount: boolean;
   blocked: boolean;
+  hateUsers: [string];
   classHistory: {
     [index: string]: [
       {
@@ -68,6 +69,10 @@ const UserSchema = new Schema<IUser, UserModel, IUserMethods>({
   },
   blocked: {
     type: Boolean,
+  },
+  hateUsers: {
+    required: true,
+    type: [String],
   },
 });
 

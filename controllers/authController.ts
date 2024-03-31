@@ -3,7 +3,7 @@ import { AuthRequest } from "../middleware/authenticateUser";
 import User from "../models/User";
 import { StatusCodes } from "http-status-codes";
 import { createJWT } from "../utils/tokenUtils";
-import { BadRequestError, UnAuthenticatedError } from "../errors";
+import { BadRequestError } from "../errors";
 import ejs from "ejs";
 import nodemailer from "nodemailer";
 import path from "path";
@@ -201,6 +201,7 @@ const login = async (req: Request, res: Response) => {
         classHistory: user!.classHistory,
         personalSchedule: user!.personalSchedule,
         blocked: user!.blocked,
+        hateUsers: user!.hateUsers,
       },
       token,
     });
@@ -210,7 +211,7 @@ const login = async (req: Request, res: Response) => {
   }
 };
 
-const updateUser = async (req: AuthRequest, res: Response) => {
+const updateUser = async (req: Request, res: Response) => {
   const { user, username } = req.body;
   if (!username) {
     throw new BadRequestError("Please check if you provided all values");
@@ -223,30 +224,6 @@ const updateUser = async (req: AuthRequest, res: Response) => {
   await db_user?.save();
 
   res.status(StatusCodes.OK).json({ db_user });
-};
-
-const addHateUser = async (req: AuthRequest, res: Response) => {
-  const { hateId } = req.params;
-
-  // const updatedUser = await User.findByIdAndUpdate(
-  //   req.user,
-  //   {
-  //     $addToSet: {
-  //       [`classHistory.${currentTableView}`]: complicatedCourseOption
-  //         ? { id: courseId, complicatedCourseOption: complicatedCourseOption }
-  //         : twoOptionsDay
-  //         ? { id: courseId, twoOptionsDay: twoOptionsDay }
-  //         : optionsTime
-  //         ? { id: courseId, optionsTime: optionsTime }
-  //         : { id: courseId },
-  //     },
-  //   },
-  //   { new: true, runValidators: true }
-  // );
-
-  // console.log(updatedUser);
-
-  // res.status(StatusCodes.OK).json({ updatedUser });
 };
 
 const userDeleteEmail = async (req: Request, res: Response) => {
@@ -339,6 +316,5 @@ export {
   loginEmail,
   login,
   updateUser,
-  addHateUser,
   userDeleteEmail,
 };

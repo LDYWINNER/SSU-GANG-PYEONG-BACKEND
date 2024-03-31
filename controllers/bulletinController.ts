@@ -70,6 +70,7 @@ interface IQueryObject {
       }
   )[];
 }
+
 const getAllBulletinPosts = async (req: AuthRequest, res: Response) => {
   const { search, board } = req.query;
 
@@ -121,9 +122,18 @@ const getAllBulletinPosts = async (req: AuthRequest, res: Response) => {
   let result = BulletinPost.find(queryObject);
   result = result.sort("-createdAt");
 
-  const bulletinAllPosts = await result;
+  let bulletinAllPosts = await result;
 
-  const bulletinTotalPosts = await BulletinPost.countDocuments(queryObject);
+  // exclude hate users
+  const user = await User.findOne({ _id: req.user });
+
+  if (user!.hateUsers.length > 0) {
+    bulletinAllPosts = bulletinAllPosts.filter((post) => {
+      return !user!.hateUsers.includes(post.createdBy as string);
+    });
+  }
+
+  const bulletinTotalPosts = bulletinAllPosts.length;
 
   res.status(StatusCodes.OK).json({
     bulletinAllPosts,
@@ -140,7 +150,18 @@ const getSinglePost = async (req: AuthRequest, res: Response) => {
     throw new NotFoundError(`No post with id: ${postId}`);
   }
 
-  post.comments = await BulletinPostComment.find({ bulletin: postId });
+  let tempComments = await BulletinPostComment.find({ bulletin: postId });
+
+  // exclude hate users
+  const user = await User.findOne({ _id: req.user });
+
+  if (user!.hateUsers.length > 0) {
+    tempComments = tempComments.filter((comment) => {
+      return !user!.hateUsers.includes(comment.createdBy as string);
+    });
+  }
+
+  post.comments = tempComments as any;
 
   res.status(StatusCodes.OK).json({ post });
 };
@@ -390,6 +411,35 @@ const reportCommentEmail = async (req: AuthRequest, res: Response) => {
   // send email to post creator
 };
 
+const addHateUser = async (req: AuthRequest, res: Response) => {
+  try {
+    const { user } = req;
+    console.log(user);
+    const { hateId } = req.params;
+    console.log(hateId);
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user,
+      { $addToSet: { [`hateUsers`]: hateId } },
+      { new: true, runValidators: true }
+    );
+
+    if (updatedUser) {
+      res
+        .status(StatusCodes.OK)
+        .json({ message: "Successfully added hate user" });
+    } else {
+      res.status(404).json({ message: "User not found." });
+    }
+  } catch (error) {
+    console.log("error in addHateUser", error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .send({ error: "Error in Adding Hate User" });
+    throw error;
+  }
+};
+
 export {
   createBulletinPost,
   updateBulletinPost,
@@ -402,4 +452,5 @@ export {
   deleteComment,
   reportPostEmail,
   reportCommentEmail,
+  addHateUser,
 };
