@@ -2,12 +2,12 @@ import express from "express";
 
 const authRouter = express.Router();
 
-import rateLimiter from "express-rate-limit";
-const apiLimiter = rateLimiter({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10,
-  message: "Too many requests from this IP, please try again after 15 minutes",
-});
+// import rateLimiter from "express-rate-limit";
+// const apiLimiter = rateLimiter({
+//   windowMs: 15 * 60 * 1000, // 15 minutes
+//   max: 10,
+//   message: "Too many requests from this IP, please try again after 15 minutes",
+// });
 
 import {
   register,
@@ -18,11 +18,11 @@ import {
   userDeleteEmail,
 } from "../controllers/authController";
 
-authRouter.route("/registerEmail").post(apiLimiter, registerEmail);
-authRouter.route("/loginEmail").post(apiLimiter, loginEmail);
-authRouter.route("/register").post(apiLimiter, register);
-authRouter.route("/login").post(apiLimiter, login);
-authRouter.route("/updateUser").patch(apiLimiter, updateUser);
+authRouter.route("/registerEmail").post(registerEmail);
+authRouter.route("/loginEmail").post(loginEmail);
+authRouter.route("/register").post(register);
+authRouter.route("/login").post(login);
+authRouter.route("/updateUser").patch(updateUser);
 authRouter.route("/userDelete/:userId").post(userDeleteEmail);
 
 export default authRouter;
