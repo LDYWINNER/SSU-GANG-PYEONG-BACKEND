@@ -357,10 +357,12 @@ const createReview = async (req: AuthRequest, res: Response) => {
       {
         $set: {
           avgGrade:
-            (course.avgGrade + overallGrade) / (course.reviews.length + 1),
+            // (course.avgGrade + overallGrade) / (course.reviews.length + 1),
+            (course.avgGrade * course.reviews.length + overallGrade) /
+            (course.reviews.length + 1),
         },
       },
-      { new: true } // This option will return the updated document
+      { new: true }
     );
     // console.log(updatedCourse);
 
