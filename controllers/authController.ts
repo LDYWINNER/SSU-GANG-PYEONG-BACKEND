@@ -25,7 +25,8 @@ const registerEmail = async (req: Request, res: Response) => {
     throw new BadRequestError("Please check if you provided all values");
   }
   //duplicate email checking
-  const userAlreadyExists = await User.findOne({ email });
+  const lowerCasedEmail = email.toLowerCase();
+  const userAlreadyExists = await User.findOne({ email: lowerCasedEmail });
   if (userAlreadyExists) {
     return res
       .status(StatusCodes.CONFLICT)
